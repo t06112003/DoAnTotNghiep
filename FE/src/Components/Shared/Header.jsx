@@ -27,13 +27,6 @@ const Header = () => {
           <span className="university-name">GGGGGGGGGG</span>
         </div>
 
-        <div className="header-middle">
-          <input type="text" placeholder="Tìm kiếm..." className="search-bar" />
-          <button className="search-button">
-            <i className="fa fa-search"></i>
-          </button>
-        </div>
-
         <div className="header-right">
           <div className="profile-dropdown">
             <img

@@ -59,14 +59,14 @@ export const importUsers = async (file, username) => {
     }
 };
 
-export const changePassword = async (username, oTP, currentPassword, newPassword) => {
+export const changePassword = async (username, otpCode, currentPassword, newPassword) => {
     try {
         const response = await fetch(`${API_URL}${API_ROUTES.CHANGE_PASSWORD}`, {
             method: "PUT",
             headers: HEADER(),
             body: JSON.stringify({
                 username: username,
-                oTP: oTP,
+                otpCode: otpCode,
                 currentPassword: currentPassword,
                 newPassword: newPassword,
             }),
@@ -77,14 +77,14 @@ export const changePassword = async (username, oTP, currentPassword, newPassword
     }
 };
 
-export const changeEmail = async (username, oTP, currentEmail, newEmail) => {
+export const changeEmail = async (username, otpCode, currentEmail, newEmail) => {
     try {
         const response = await fetch(`${API_URL}${API_ROUTES.CHANGE_EMAIL}`, {
             method: "POST",
             headers: HEADER(),
             body: JSON.stringify({
                 username: username,
-                oTP: oTP,
+                otpCode: otpCode,
                 currentEmail: currentEmail,
                 newEmail: newEmail,
             }),

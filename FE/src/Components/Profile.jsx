@@ -13,14 +13,14 @@ const Profile = () => {
     const [email, setEmail] = useState('');
 
     const [changeEmailObject, setChangeEmailObject] = useState({
-        oTP: '',
+        otpCode: '',
         currentEmail: email,
         newEmail: '',
     });
 
 
     const [changePasswordObject, setChangePasswordObject] = useState({
-        oTP: '',
+        otpCode: '',
         currentPassword: '',
         newPassword: '',
         repeatPassword: '',
@@ -41,18 +41,17 @@ const Profile = () => {
         try {
             const response = await changeEmail(
                 userData.username,
-                changeEmailObject.oTP,
+                changeEmailObject.otpCode,
                 changeEmailObject.currentEmail,
                 changeEmailObject.newEmail
             );
-
+            const data = await response.json();
             if (response && response.ok) {
                 setEmail(changeEmailObject.newEmail);
                 setIsChangingEmail(false);
                 setType('toast-success');
                 setMessage('Email changed successfully!');
             } else {
-                const data = await response.json();
                 setType('toast-error');
                 setMessage(data.message || 'Failed to change email');
             }
@@ -75,7 +74,7 @@ const Profile = () => {
         try {
             const response = await changePassword(
                 userData.username,
-                changePasswordObject.oTP,
+                changePasswordObject.otpCode,
                 changePasswordObject.currentPassword,
                 changePasswordObject.newPassword,
             );
@@ -129,60 +128,75 @@ const Profile = () => {
             </div>
 
             {isChangingEmail && (
-                <div className="modal">
-                    <h3>Change Email</h3>
-                    <div className="otp-section">
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h3>Change Email</h3>
+                        <div className="otp-section">
+                            <input
+                                className='modal-input-otp'
+                                type="text"
+                                placeholder="OTP Code"
+                                value={changeEmailObject.otpCode}
+                                onChange={(e) => setChangeEmailObject({ ...changeEmailObject, otpCode: e.target.value })}
+                            />
+                            <button
+                                onClick={handleSendOTP}
+                                className='modal-button-otp'>Send</button>
+                        </div>
                         <input
-                            type="text"
-                            placeholder="OTP Code"
-                            value={changeEmailObject.oTP}
-                            onChange={(e) => setChangeEmailObject({ ...changeEmailObject, oTP: e.target.value })}
+                            className='modal-input-email'
+                            type="email"
+                            placeholder="New Email"
+                            value={changeEmailObject.newEmail}
+                            onChange={(e) => setChangeEmailObject({ ...changeEmailObject, newEmail: e.target.value })}
                         />
-                        <button onClick={handleSendOTP}>Send</button>
+                        <div className="modal-buttons">
+                            <button className="modal-close" onClick={() => setIsChangingEmail(false)}>Cancel</button>
+                            <button className="modal-submit" onClick={handleChangeEmail}>Submit</button>
+                        </div>
                     </div>
-                    <input
-                        type="email"
-                        placeholder="New Email"
-                        value={changeEmailObject.newEmail}
-                        onChange={(e) => setChangeEmailObject({ ...changeEmailObject, newEmail: e.target.value })}
-                    />
-                    <button onClick={handleChangeEmail}>Submit</button>
-                    <button onClick={() => setIsChangingEmail(false)}>Cancel</button>
                 </div>
             )}
 
             {isChangingPassword && (
-                <div className="modal">
-                    <h3>Change Password</h3>
-                    <input
-                        type="password"
-                        placeholder="Current Password"
-                        value={changePasswordObject.currentPassword}
-                        onChange={(e) => setChangePasswordObject({ ...changePasswordObject, currentPassword: e.target.value })}
-                    />
-                    <div className="otp-section">
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h3>Change Password</h3>
                         <input
-                            type="text"
-                            placeholder="OTP Code"
-                            value={changePasswordObject.oTP}
-                            onChange={(e) => setChangePasswordObject({ ...changePasswordObject, oTP: e.target.value })}
+                            className='modal-input-password'
+                            type="password"
+                            placeholder="Current Password"
+                            value={changePasswordObject.currentPassword}
+                            onChange={(e) => setChangePasswordObject({ ...changePasswordObject, currentPassword: e.target.value })}
                         />
-                        <button onClick={handleSendOTP}>Send</button>
+                        <div className="otp-section">
+                            <input
+                                type="text"
+                                placeholder="OTP Code"
+                                value={changePasswordObject.otpCode}
+                                onChange={(e) => setChangePasswordObject({ ...changePasswordObject, otpCode: e.target.value })}
+                            />
+                            <button onClick={handleSendOTP}>Send</button>
+                        </div>
+                        <input
+                            className='modal-input-password'
+                            type="password"
+                            placeholder="New Password"
+                            value={changePasswordObject.newPassword}
+                            onChange={(e) => setChangePasswordObject({ ...changePasswordObject, newPassword: e.target.value })}
+                        />
+                        <input
+                            className='modal-input-password'
+                            type="password"
+                            placeholder="Repeat New Password"
+                            value={changePasswordObject.repeatPassword}
+                            onChange={(e) => setChangePasswordObject({ ...changePasswordObject, repeatPassword: e.target.value })}
+                        />
+                        <div className="modal-buttons">
+                            <button className="modal-close" onClick={() => setIsChangingPassword(false)}>Cancel</button>
+                            <button className="modal-submit" onClick={handleChangePassword}>Submit</button>
+                        </div>
                     </div>
-                    <input
-                        type="password"
-                        placeholder="New Password"
-                        value={changePasswordObject.newPassword}
-                        onChange={(e) => setChangePasswordObject({ ...changePasswordObject, newPassword: e.target.value })}
-                    />
-                    <input
-                        type="password"
-                        placeholder="Repeat New Password"
-                        value={changePasswordObject.repeatPassword}
-                        onChange={(e) => setChangePasswordObject({ ...changePasswordObject, repeatPassword: e.target.value })}
-                    />
-                    <button onClick={handleChangePassword}>Submit</button>
-                    <button onClick={() => setIsChangingPassword(false)}>Cancel</button>
                 </div>
             )}
         </div>
