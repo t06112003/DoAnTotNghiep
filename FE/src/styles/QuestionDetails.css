@@ -1,0 +1,337 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    position: relative;
+}
+
+.question-item {
+    margin-bottom: 15px;
+}
+
+.question-item p {
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.question-item ul {
+    list-style-type: none;
+    padding-left: 15px;
+}
+
+.correct-answer {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.incorrect-answer {
+    color: #333;
+}
+
+.btn-groups {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.btn-group-question {
+    width: 18%;
+    position: relative;
+}
+
+.btn-group-question1 {
+    width: 28%;
+    position: relative;
+
+}
+
+.add-question-btn {
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 10px 30px 10px 20px;
+    color: white;
+    display: inline-block;
+    margin-left: 0;
+    position: relative;
+    text-align: left;
+    background-color: #4caf50;
+}
+
+.add-question-btn:hover {
+    background-color: #218838;
+}
+
+.question-text {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.question-text:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.action-buttons-question {
+    display: flex;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.question-text:hover .action-buttons-question {
+    opacity: 1;
+}
+
+.answer-item {
+    margin-bottom: 8px;
+    display: flex;
+    cursor: text;
+}
+
+.edit-answer-modal {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.edit-text-input {
+    text-align: center;
+    border: none;
+}
+
+.edit-text-input:focus,
+.edit-text-input:focus-visible {
+    outline: none;
+}
+
+.checkbox-input {
+    width: 15px;
+}
+
+.modal-input, .modal-select {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.answer-field {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.answer-input {
+    padding: 8px;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.answer-label {
+    display: flex;
+    align-items: center;
+}
+
+.correct-answer-radio {
+    margin-left: 5px;
+}
+
+.add-answer-btn {
+    padding: 8px;
+    background-color: #4caf50;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.add-answer-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.assign-questions-btn {
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 10px 30px 10px 20px;
+    color: white;
+    display: inline-block;
+    margin-left: 0;
+    position: relative;
+    text-align: left;
+    background-color: #4caf50;
+}
+
+.assign-questions-btn:hover {
+    background-color: #218838;
+}
+
+.two-column-modal {
+    display: flex;
+    max-width: 800px;
+    width: 90%;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-left,
+.modal-right {
+    flex: 1;
+    padding: 20px;
+}
+
+.modal-left {
+    border-right: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.modal-left h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.modal-left ul {
+    list-style: disc;
+    margin-left: 20px;
+}
+
+.file-upload {
+    margin-top: 20px;
+    border: 2px dashed #4caf50;
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.file-upload:hover {
+    background-color: #f1f1f1;
+}
+
+.file-input {
+    display: none;
+}
+
+.upload-btn {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.upload-btn:hover {
+    background-color: #3e8e41;
+}
+
+.file-upload {
+    margin-top: 20px;
+    border: 2px dashed #4caf50;
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+    position: relative;
+}
+
+.file-input {
+    display: none;
+}
+
+.choose-file-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #4caf50;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.choose-file-btn:hover {
+    background-color: #3e8e41;
+}
+
+.file-name {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+.upload-btn {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.upload-btn:hover {
+    background-color: #3e8e41;
+}
+
+.modal-left {
+    width: 45%;
+    padding-right: 20px;
+    border-right: 1px solid #ccc;
+}
+
+.modal-right {
+    width: 55%;
+    padding-left: 20px;
+}
+
+.file-drop-zone {
+    border: 2px dashed #4caf50;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.file-drop-zone.drag-over {
+    background-color: #f0f8ff;
+}
+
+.choose-file-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #4caf50;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.choose-file-btn:hover {
+    background-color: #3e8e41;
+}
+
+.file-name {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+}

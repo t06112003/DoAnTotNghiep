@@ -1,0 +1,176 @@
+.login-container {
+    max-width: 400px;
+    margin: auto;
+    margin-top: 50px;
+    padding: 20px;
+    padding-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.password-group input {
+    width: 100%;
+    padding-right: 40px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: 1px solid #afafaf;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+    background-color: #429b45;
+}
+
+button:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.247);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    animation: pop-up 0.5s;
+}
+
+.modal h2 {
+    margin-top: 0;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.modal-buttons button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-close {
+    background-color: #ccc;
+    color: #333;
+    margin-right: 10px;
+}
+
+.modal-close:hover {
+    background-color: #bbb;
+}
+
+.modal-close:disabled {
+    cursor: not-allowed;
+    background-color: #999;
+    color: #fff;
+}
+
+
+.modal-submit {
+    background-color: #4caf50;
+    color: #fff;
+}
+
+.modal-submit:hover {
+    background-color: #429b45;
+}
+
+.modal-submit:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+}
+
+.forgot-password-link {
+    color: #007bff;
+    cursor: pointer;
+    text-align: center;
+    display: block;
+    margin-top: 15px;
+}
+
+.forgot-password-link:hover {
+    text-decoration: underline;
+}
+
+.eye-icon {
+    position: absolute;
+    width: 30px;
+    height: 24px;
+    bottom: 6px;
+    right: 6px;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.close {
+    background-image: url("../assets/EyeClose.svg");
+}
+
+.open {
+    background-image: url("../assets/EyeOpen.svg");
+}
+
+@keyframes pop-up {
+    0% {
+        transform: scale(0.7);
+    }
+
+    40% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1.0);
+    }
+}

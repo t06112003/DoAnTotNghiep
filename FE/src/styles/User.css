@@ -1,0 +1,51 @@
+.user-test-list-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.test-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.test-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f1f1f1;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.test-item:hover {
+    background-color: #e7e7e7;
+}
+
+.test-details {
+    flex: 1;
+}
+
+.test-info {
+    display: flex;
+    gap: 10px;
+}
+
+.test-name {
+    font-weight: bold;
+}
+
+.test-date, .test-key, .test-time {
+    font-style: italic;
+    color: #555;
+}

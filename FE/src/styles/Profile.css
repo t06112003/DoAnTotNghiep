@@ -1,0 +1,73 @@
+.user-profile {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    color: #4f4f4f;
+    text-align: center;
+}
+
+.user-profile h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.user-profile .highlight {
+    color: #8e24aa;
+}
+
+.profile-details {
+    text-align: left;
+    margin: 10px 0;
+}
+
+.button-group button {
+    background-color: #8e24aa;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button-group button:hover {
+    background-color: #7b1fa2;
+}
+
+.modal {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.modal input {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.modal button {
+    padding: 10px 20px;
+    margin: 10px 5px;
+    cursor: pointer;
+}
+
+.modal button:first-of-type {
+    background-color: #8e24aa;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.modal button:last-of-type {
+    background-color: #f5f5f5;
+    color: #555;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
