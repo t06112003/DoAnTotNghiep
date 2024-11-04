@@ -1,13 +1,18 @@
 import { useState, useContext, useEffect } from 'react';
 import { AppData } from '../Root';
-import { changeEmail, changePassword, getEmail, getName } from '../api/apiUser';
+import { changeEmail, changePassword, getEmail, getName, importUsers, isAdmin } from '../api/apiUser';
 import { sendOTP } from '../api/apiOTP';
 import '../styles/Profile.css';
+import { useNavigate } from 'react-router-dom';
+import { checkSession } from "../utils/checkSession";
 
 const Profile = () => {
+    const navigate = useNavigate();
     const { userData, showToast, setType, setMessage } = useContext(AppData);
     const [isChangingEmail, setIsChangingEmail] = useState(false);
     const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [isAdminUser, setIsAdminUser] = useState(false);
+    const [file, setFile] = useState(null);
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -36,6 +41,17 @@ const Profile = () => {
         };
         fetchData();
     }, [userData.username]);
+
+    useEffect(() => {
+        const adminStatus = JSON.parse(localStorage.getItem("userData")).username;
+        if (checkSession()) {
+            if (isAdmin(adminStatus)) {
+                setIsAdminUser(true)
+            } else {
+                setIsAdminUser(false)
+            }
+        }
+    }, []);
 
     const handleChangeEmail = async () => {
         try {
@@ -107,6 +123,31 @@ const Profile = () => {
         }
         showToast();
     };
+
+    const handleFileChange = (event) => {
+        setFile(event.target.files[0]);
+    };
+
+    const handleFileUpload = async () => {
+        if (file) {
+            try {
+                const response = await importUsers(file, username);
+                if (response.ok) {
+                    console.log('File imported successfully');
+                } else {
+                    console.error('File import failed');
+                }
+            } catch (error) {
+                console.error('Error during file import:', error);
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (!checkSession()) {
+            navigate("/");
+        }
+    }, []);
 
     return (
         <div className="user-profile">
@@ -199,6 +240,25 @@ const Profile = () => {
                     </div>
                 </div>
             )}
+
+            {isAdminUser && (
+                <div className="admin-upload-section">
+                    <h3>Import Users</h3>
+                    <div
+                        className="drag-drop-area"
+                        onDrop={(e) => {
+                            e.preventDefault();
+                            setFile(e.dataTransfer.files[0]);
+                        }}
+                        onDragOver={(e) => e.preventDefault()}
+                    >
+                        <p>Drag and drop an Excel file here, or click to select</p>
+                        <input type="file" onChange={handleFileChange} />
+                    </div>
+                    <button onClick={handleFileUpload}>Upload</button>
+                </div>
+            )}
+
         </div>
     );
 }

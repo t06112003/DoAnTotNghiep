@@ -1,11 +1,13 @@
 import { useEffect, useState, useContext, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getAllQuestion, createQuestion, editQuestion, deleteQuestion, assignRandomQuestions, getQuestionAssigned, importQuestionsWord } from '../api/apiQuestion';
 import { editAnswer } from '../api/apiAnswer';
 import { AppData } from '../Root';
 import '../styles/QuestionDetails.css';
+import { checkSession } from "../utils/checkSession";
 
 const QuestionDetails = () => {
+    const navigate = useNavigate();
     const { testId } = useParams();
     const { userData, showToast, setType, setMessage } = useContext(AppData);
     const [questions, setQuestions] = useState([]);
@@ -384,6 +386,12 @@ const QuestionDetails = () => {
             showToast();
         }
     };
+
+    useEffect(() => {
+        if (!checkSession()) {
+            navigate("/");
+        }
+    }, []);
 
     return (
         <div className="container">

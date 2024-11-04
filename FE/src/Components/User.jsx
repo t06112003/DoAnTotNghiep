@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { getAllTestUser } from '../api/apiTest';
 import '../styles/User.css';
+import { useNavigate } from 'react-router-dom';
+import { checkSession } from "../utils/checkSession";
 
 const User = () => {
+    const navigate = useNavigate();
     const [tests, setTests] = useState([]);
     const [error, setError] = useState(null);
 
@@ -17,6 +20,12 @@ const User = () => {
 
     useEffect(() => {
         fetchTests();
+    }, []);
+
+    useEffect(() => {
+        if (!checkSession()) {
+            navigate("/");
+        }
     }, []);
 
     return (
