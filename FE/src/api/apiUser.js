@@ -59,16 +59,16 @@ export const importUsers = async (file, username) => {
     }
 };
 
-export const changePassword = async (username, currentPassword, newPassword, oTP) => {
+export const changePassword = async (username, oTP, currentPassword, newPassword) => {
     try {
         const response = await fetch(`${API_URL}${API_ROUTES.CHANGE_PASSWORD}`, {
             method: "PUT",
             headers: HEADER(),
             body: JSON.stringify({
                 username: username,
+                oTP: oTP,
                 currentPassword: currentPassword,
                 newPassword: newPassword,
-                oTP: oTP
             }),
         });
         return response;

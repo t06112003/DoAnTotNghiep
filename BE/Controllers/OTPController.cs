@@ -32,7 +32,7 @@ namespace BE.Controllers
             if (user == null) return BadRequest(new { message = "User not found!" });
             if (string.IsNullOrWhiteSpace(user.Email)) return BadRequest(new { message = "Email not found!" });
             if (user.Email != input.Email) return BadRequest(new { message = "Wrong Email!" });
-            var activeCode = new Random().Next(1000, 9999);
+            var activeCode = new Random().Next(100000, 999999);
             var rs = await _email.SendEmail(new EmailModel()
             {
                 To = input.Email,
