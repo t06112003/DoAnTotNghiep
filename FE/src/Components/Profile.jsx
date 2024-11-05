@@ -42,16 +42,21 @@ const Profile = () => {
         fetchData();
     }, [userData.username]);
 
-    useEffect(() => {
-        const adminStatus = JSON.parse(localStorage.getItem("userData")).username;
+    const checkAdminStatus = async () => {
+        const adminStatus = await isAdmin(userData.username);
         if (checkSession()) {
-            if (isAdmin(adminStatus)) {
-                setIsAdminUser(true)
+            if (adminStatus.status === 200) {
+                setIsAdminUser(true);
             } else {
-                setIsAdminUser(false)
+                setIsAdminUser(false);
             }
         }
-    }, []);
+    };
+
+    useEffect(() => {
+        checkAdminStatus();
+    }, [userData.username]);
+
 
     const handleChangeEmail = async () => {
         try {
@@ -131,14 +136,21 @@ const Profile = () => {
     const handleFileUpload = async () => {
         if (file) {
             try {
-                const response = await importUsers(file, username);
+                const response = await importUsers(file, userData.username);
+                const data = await response.json();
                 if (response.ok) {
-                    console.log('File imported successfully');
+                    setType('toast-success');
+                    setMessage(data.message);
+                    showToast();
                 } else {
-                    console.error('File import failed');
+                    setType('toast-error');
+                    setMessage(data.message || 'File import failed');
+                    showToast();
                 }
             } catch (error) {
-                console.error('Error during file import:', error);
+                setType('toast-error');
+                setMessage(error.message || 'File import failed');
+                showToast();
             }
         }
     };

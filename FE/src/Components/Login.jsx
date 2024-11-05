@@ -82,17 +82,6 @@ const Login = () => {
         setPasswordVisible(!passwordVisible);
     };
 
-    useEffect(() => {
-        const adminStatus = JSON.parse(localStorage.getItem("userData")).username;
-        if (checkSession()) {
-            if (isAdmin(adminStatus)) {
-                navigate("/admin");
-            } else {
-                navigate("/submit-answer");
-            }
-        }
-    }, []);
-
     return (
         <div className="login-container">
             <h2>Login</h2>

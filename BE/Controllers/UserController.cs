@@ -91,15 +91,15 @@ namespace BE.Controllers
                     for (int row = 2; row <= rowCount; row++)
                     {
                         var username = worksheet.Cells[row, 1].Text.Trim();
+                        if (string.IsNullOrEmpty(username))
+                        {
+                            continue;
+                        }
+
                         var password = worksheet.Cells[row, 2].Text.Trim();
                         var email = worksheet.Cells[row, 3].Text.Trim();
                         var name = worksheet.Cells[row, 4].Text.Trim();
                         var isAdminText = worksheet.Cells[row, 5].Text.Trim();
-
-                        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(isAdminText))
-                        {
-                            return BadRequest(new { message = $"Missing required data at row {row}." });
-                        }
 
                         if (existingUsernames.Contains(username))
                         {
