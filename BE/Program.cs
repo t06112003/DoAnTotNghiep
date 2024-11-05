@@ -24,6 +24,7 @@ builder.Services.AddScoped<AnswerController>();
 builder.Services.AddScoped<EmailController>();
 builder.Services.AddScoped<OTPController>();
 builder.Services.AddHostedService<EmailReminderService>();
+builder.Services.AddHostedService<ZeroScoreService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
