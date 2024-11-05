@@ -12,6 +12,10 @@ using BE._service;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
+builder.Services.AddSingleton<ZeroScoreService>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<ZeroScoreService>());
+builder.Services.AddSingleton<EmailReminderService>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<EmailReminderService>());
 builder.Configuration.AddJsonFile("appsettings.json");
 var configuration = builder.Configuration;
 builder.Services.AddDbContext<DataContext>(options =>

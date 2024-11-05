@@ -15,6 +15,7 @@ namespace BE._service
         DateTime vietnamTime;
         private Timer _timer;
         private readonly IServiceProvider _serviceProvider;
+        public DateTime? LastRunTime { get; private set; }
 
         public EmailReminderService(IServiceProvider serviceProvider)
         {
@@ -24,12 +25,14 @@ namespace BE._service
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            LastRunTime = DateTime.Now;
             _timer = new Timer(SendEmailReminders, null, TimeSpan.Zero, TimeSpan.FromMinutes(10));
             return Task.CompletedTask;
         }
 
         private async void SendEmailReminders(object state)
         {
+            LastRunTime = DateTime.Now;
             using (var scope = _serviceProvider.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<DataContext>();

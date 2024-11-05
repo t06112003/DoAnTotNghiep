@@ -13,9 +13,10 @@ using Microsoft.Extensions.Logging;
 public class ZeroScoreService : IHostedService, IDisposable
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<ZeroScoreService> _logger; // Add logger dependency
+    private readonly ILogger<ZeroScoreService> _logger;
     private List<Timer> _timers = new List<Timer>();
     private readonly TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+    public DateTime? LastRunTime { get; private set; }
 
     public ZeroScoreService(IServiceProvider serviceProvider, ILogger<ZeroScoreService> logger)
     {
@@ -34,6 +35,8 @@ public class ZeroScoreService : IHostedService, IDisposable
                 .Where(t => t.EndDate > vietnamTime)
                 .ToListAsync();
 
+            LastRunTime = DateTime.Now;
+
             foreach (var test in upcomingTests)
             {
                 var testEndTime = test.EndDate;
@@ -50,6 +53,7 @@ public class ZeroScoreService : IHostedService, IDisposable
 
     private async void AssignZeroScores(object state)
     {
+        LastRunTime = DateTime.Now;
         var testId = (long)state;
         _logger.LogInformation($"Assigning zero scores for Test ID {testId}");
         var vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
