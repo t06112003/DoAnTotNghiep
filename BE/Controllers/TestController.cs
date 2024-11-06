@@ -133,24 +133,13 @@ namespace BE.Controllers
             if (user == null) return BadRequest(new { message = "User not found!" });
             var test = await _context.Test.SingleOrDefaultAsync(t => t.TestId == input.TestId);
             if (test == null) return BadRequest(new { message = "Test not found!" });
-
-            if (input.TestKey != test.TestKey)
-                return BadRequest(new { message = "Wrong TestKey! Please try again!" });
-
-            if (vietnamTime < test.BeginDate || vietnamTime > test.EndDate)
-            {
-                return BadRequest(new { message = "Test is not available at this time!" });
-            }
-
+            if (input.TestKey != test.TestKey) return BadRequest(new { message = "Wrong TestKey! Please try again!" });
+            if (vietnamTime < test.BeginDate || vietnamTime > test.EndDate) return BadRequest(new { message = "Test is not available at this time!" });
             var existingAssignment = await _context.UserTestCodeAssignment
-            .SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);
-
-            if (existingAssignment != null)
-                return BadRequest(new { message = "You have already been assigned for this test!" });
-
+                .SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);
+            if (existingAssignment != null) return BadRequest(new { message = "You have already been assigned for this test!" });
             var userTestCode = await _context.UserTestCodeAssignment
-            .SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);
-
+                .SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);
             long assignedCode;
             if (userTestCode == null)
             {
@@ -202,7 +191,11 @@ namespace BE.Controllers
                         .ToList(),
                     Code = tqa.Code
                 }).ToListAsync();
-            return Ok(randomTest);
+            return Ok(new
+            {
+                randomTest,
+                isAssigned = true
+            });
         }
 
         [Authorize]
