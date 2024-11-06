@@ -1,5 +1,5 @@
 import API_ROUTES from "../constants/apiRoutes";
-import { HEADER,HEADERFORM } from "../constants/apiHeaderConfig";
+import { HEADER, HEADERFORM } from "../constants/apiHeaderConfig";
 
 const API_URL = import.meta.env.VITE_API_URL;
 

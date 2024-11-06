@@ -2,6 +2,7 @@ import { useState, useContext, useEffect } from 'react';
 import { AppData } from '../Root';
 import { changeEmail, changePassword, getEmail, getName, importUsers, isAdmin } from '../api/apiUser';
 import { sendOTP } from '../api/apiOTP';
+import { getServiceStatus } from '../api/apiService';
 import '../styles/Profile.css';
 import { useNavigate } from 'react-router-dom';
 import { checkSession } from "../utils/checkSession";
@@ -30,6 +31,20 @@ const Profile = () => {
         newPassword: '',
         repeatPassword: '',
     });
+
+    const [serviceStatus, setServiceStatus] = useState({
+        zeroScoreServiceLastRun: null,
+        emailReminderServiceLastRun: null,
+    });
+
+    const fetchServiceStatus = async () => {
+        try {
+            const data = await getServiceStatus();
+            setServiceStatus(data);
+        } catch (error) {
+            console.error('Failed to fetch service status:', error);
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -161,6 +176,10 @@ const Profile = () => {
         }
     }, []);
 
+    useEffect(() => {
+        fetchServiceStatus();
+    }, []);
+
     return (
         <div className="user-profile">
             <h2>
@@ -210,6 +229,7 @@ const Profile = () => {
                     </div>
                 </div>
             )}
+
 
             {isChangingPassword && (
                 <div className="modal-overlay">
@@ -268,6 +288,27 @@ const Profile = () => {
                         <input type="file" onChange={handleFileChange} />
                     </div>
                     <button onClick={handleFileUpload}>Upload</button>
+                </div>
+            )}
+
+            {isAdminUser && (
+                <div className="service-status">
+                    <h3>Service Status</h3>
+                    <p>
+                        <strong>Zero Score Service Last Run:</strong>{" "}
+                        {serviceStatus.zeroScoreServiceLastRun
+                            ? new Date(serviceStatus.zeroScoreServiceLastRun).toLocaleString()
+                            : 'N/A'}
+                    </p>
+                    <p>
+                        <strong>Email Reminder Service Last Run:</strong>{" "}
+                        {serviceStatus.emailReminderServiceLastRun
+                            ? new Date(serviceStatus.emailReminderServiceLastRun).toLocaleString()
+                            : 'N/A'}
+                    </p>
+                    <button onClick={fetchServiceStatus} className="refresh-button">
+                        Refresh
+                    </button>
                 </div>
             )}
 

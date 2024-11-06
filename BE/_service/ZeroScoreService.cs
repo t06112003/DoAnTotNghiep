@@ -14,7 +14,8 @@ public class ZeroScoreService : IHostedService, IDisposable
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<ZeroScoreService> _logger;
-    private List<Timer> _timers = new List<Timer>();
+    private Dictionary<long, Timer> _testTimers = new Dictionary<long, Timer>();
+    private Timer _checkNewTestsTimer;
     private readonly TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
     public DateTime? LastRunTime { get; private set; }
 
@@ -24,9 +25,20 @@ public class ZeroScoreService : IHostedService, IDisposable
         _logger = logger;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
+        LastRunTime = DateTime.Now;
         _logger.LogInformation("ZeroScoreService is starting...");
+        ScheduleExistingTests();
+        
+        // Start a periodic timer to check for new tests every minute
+        _checkNewTestsTimer = new Timer(CheckForNewTests, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+        
+        return Task.CompletedTask;
+    }
+
+    private async void ScheduleExistingTests()
+    {
         using (var scope = _serviceProvider.CreateScope())
         {
             var context = scope.ServiceProvider.GetRequiredService<DataContext>();
@@ -35,18 +47,43 @@ public class ZeroScoreService : IHostedService, IDisposable
                 .Where(t => t.EndDate > vietnamTime)
                 .ToListAsync();
 
-            LastRunTime = DateTime.Now;
+            foreach (var test in upcomingTests)
+            {
+                ScheduleTestForZeroScore(test, vietnamTime);
+            }
+        }
+    }
+
+    private void ScheduleTestForZeroScore(Test test, DateTime vietnamTime)
+    {
+        var testEndTime = test.EndDate;
+        var remainingTime = testEndTime - vietnamTime + TimeSpan.FromMinutes(1);
+
+        if (remainingTime.TotalMilliseconds > 0 && !_testTimers.ContainsKey(test.TestId))
+        {
+            _logger.LogInformation($"Scheduling zero score assignment for Test ID {test.TestId} at {testEndTime}");
+            var timer = new Timer(AssignZeroScores, test.TestId, remainingTime, Timeout.InfiniteTimeSpan);
+            _testTimers[test.TestId] = timer;
+        }
+    }
+
+    private async void CheckForNewTests(object state)
+    {
+        LastRunTime = DateTime.Now;
+        
+        var vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
+
+        using (var scope = _serviceProvider.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+            var upcomingTests = await context.Test
+                .Where(t => t.EndDate > vietnamTime)
+                .ToListAsync();
 
             foreach (var test in upcomingTests)
             {
-                var testEndTime = test.EndDate;
-                var remainingTime = testEndTime - vietnamTime + TimeSpan.FromMinutes(1);
-                if (remainingTime.TotalMilliseconds > 0)
-                {
-                    _logger.LogInformation($"Scheduling zero score assignment for Test ID {test.TestId} at {testEndTime}");
-                    var timer = new Timer(AssignZeroScores, test.TestId, remainingTime, Timeout.InfiniteTimeSpan);
-                    _timers.Add(timer);
-                }
+                ScheduleTestForZeroScore(test, vietnamTime);
             }
         }
     }
@@ -93,19 +130,27 @@ public class ZeroScoreService : IHostedService, IDisposable
     public Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("ZeroScoreService is stopping...");
-        foreach (var timer in _timers)
+        
+        // Stop all individual test timers
+        foreach (var timer in _testTimers.Values)
         {
             timer?.Change(Timeout.Infinite, 0);
             timer?.Dispose();
         }
+        
+        // Stop the periodic check timer
+        _checkNewTestsTimer?.Change(Timeout.Infinite, 0);
+        _checkNewTestsTimer?.Dispose();
+        
         return Task.CompletedTask;
     }
 
     public void Dispose()
     {
-        foreach (var timer in _timers)
+        foreach (var timer in _testTimers.Values)
         {
             timer?.Dispose();
         }
+        _checkNewTestsTimer?.Dispose();
     }
 }

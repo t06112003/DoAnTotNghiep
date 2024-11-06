@@ -19,9 +19,8 @@ namespace BE.Controllers
             _emailReminderService = emailReminderService;
         }
 
-        [Authorize]
-        [HttpGet("last-run-times")]
-        public ActionResult GetLastRunTimes()
+        [HttpGet("LastRunTimes")]
+        public ActionResult LastRunTimes()
         {
             var lastRunTimeInfo = new
             {

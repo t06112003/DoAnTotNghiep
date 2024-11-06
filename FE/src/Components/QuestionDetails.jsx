@@ -483,7 +483,6 @@ const QuestionDetails = () => {
             {isModalOpen && (
                 <div className="modal-overlay">
                     <div className="modal two-column-modal">
-                        {/* Left Section: File Upload and Instructions */}
                         <div className="modal-left">
                             <h3>Question Formatting Rules</h3>
                             <ul>
@@ -514,7 +513,6 @@ const QuestionDetails = () => {
                             </div>
                         </div>
 
-                        {/* Right Section: Question Creation Form */}
                         <div className="modal-right">
                             <h3 className="modal-title">Create New Question</h3>
                             <form onSubmit={handleCreateQuestion} className="modal-form">

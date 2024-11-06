@@ -11,7 +11,7 @@ import "../styles/Login.css";
 const Login = () => {
     const navigate = useNavigate();
 
-    const { showToast, setMessage, setType, setUserData } = useContext(AppData);
+    const { userData, showToast, setMessage, setType, setUserData } = useContext(AppData);
 
     const [username, setUsername] = useState("");
     const [username1, setUsername1] = useState("");
@@ -39,7 +39,7 @@ const Login = () => {
                     if (adminStatus.status === 200) {
                         navigate("/admin");
                     } else {
-                        navigate("/submit-answer")
+                        navigate("/user")
                     }
                 }
                 else {
@@ -82,6 +82,21 @@ const Login = () => {
         setPasswordVisible(!passwordVisible);
     };
 
+    const checkSessionLogin = async () => {
+        if (checkSession()) {
+            const adminStatus = await isAdmin(userData.username);
+            if (adminStatus.status === 200) {
+                navigate("/admin");
+            } else {
+                navigate("/user")
+            }
+        }
+    }
+    
+    useEffect(() => {
+        checkSessionLogin();
+    }, []);
+
     return (
         <div className="login-container">
             <h2>Login</h2>
@@ -109,7 +124,7 @@ const Login = () => {
                         <div className={`eye-icon ${passwordVisible ? "open" : "close"}`} onClick={togglePasswordVisibility}></div>
                     </div>
                 </div>
-                <button className="login-btn"type="submit" disabled={isLoading}>
+                <button className="login-btn" type="submit" disabled={isLoading}>
                     {isLoading ? "Logging in..." : "Login"}
                 </button>
                 {error && <p className="error">{error}</p>}

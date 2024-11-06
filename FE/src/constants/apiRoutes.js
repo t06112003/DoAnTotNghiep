@@ -23,6 +23,7 @@ const API_ROUTES = {
     CHECK_IS_ADMIN: '/User/CheckIsAdmin',
     GET_INFO: '/User/GetInfo',
     USER_MARK_VIEW: '/UserMark/UserMarkView',
+    LAST_RUN_TIMES: '/ServiceStatus/LastRunTimes',
 }
 
 export default API_ROUTES
