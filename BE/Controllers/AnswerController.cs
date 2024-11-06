@@ -25,27 +25,31 @@ namespace BE.Controllers
         [NonAction]
         public async Task<List<AnswerListOutputDto>> SearchByQuestionId(long QuestionId)
         {
-            var answer = await (from Answer in _context.Answer
-            where Answer.QuestionId == QuestionId
-            select new AnswerListOutputDto()
-            {
-                AnswerId = Answer.AnswerId,
-                AnswerText = Answer.AnswerText,
-                IsCorrect = Answer.IsCorrect,
-            }).ToListAsync();
+            var answer = await (
+                from Answer in _context.Answer
+                where Answer.QuestionId == QuestionId
+                select new AnswerListOutputDto()
+                {
+                    AnswerId = Answer.AnswerId,
+                    AnswerText = Answer.AnswerText,
+                    IsCorrect = Answer.IsCorrect,
+                })
+                .ToListAsync();
             return answer;
         }
-        
+
         [NonAction]
         public async Task<List<AnswerRandomOutputDto>> AnswerByQuestionId(long QuestionId)
         {
-            var answer = await (from Answer in _context.Answer
-            where Answer.QuestionId == QuestionId
-            select new AnswerRandomOutputDto()
-            {
-                AnswerId = Answer.AnswerId,
-                AnswerText = Answer.AnswerText,
-            }).ToListAsync();
+            var answer = await (
+                from Answer in _context.Answer
+                where Answer.QuestionId == QuestionId
+                select new AnswerRandomOutputDto()
+                {
+                    AnswerId = Answer.AnswerId,
+                    AnswerText = Answer.AnswerText,
+                })
+                .ToListAsync();
             return answer;
         }
 
@@ -57,14 +61,11 @@ namespace BE.Controllers
             if (user == null) return BadRequest(new { message = "User not found!" });
             var test = await _context.Test.SingleOrDefaultAsync(t => t.TestId == input.TestId);
             if (test == null) return BadRequest(new { message = "Test not found!" });
-            if (string.IsNullOrWhiteSpace(input.TestKey)) return BadRequest(new { message = "Invalid Key!" });
-            if (input.TestKey != test.TestKey) return BadRequest(new { message = "Invalid Key for this Test!" });
+            var existingAssignment = await _context.UserTestCodeAssignment.SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);
+            if (existingAssignment == null) return BadRequest(new { message = "You have not assigned for the test yet!" });
             if (vietnamTime < test.BeginDate) return BadRequest(new { message = "Test time has not yet begun" });
             if (vietnamTime > test.EndDate) return BadRequest(new { message = "The test is overdue" });
-            if (vietnamTime > test.BeginDate + test.TestTime) return BadRequest(new { message = "The test is overdue" });
-            var existingAssignment = await _context.UserTestCodeAssignment
-            .SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);
-            if (existingAssignment == null) return BadRequest(new { message = "You have not assigned for the test yet!" });
+            if (vietnamTime > existingAssignment.AssignmentTime + test.TestTime) return BadRequest(new { message = "The test is overdue" });
 
             double totalMarks = 0;
 
@@ -107,53 +108,53 @@ namespace BE.Controllers
         [HttpPut("EditAnswer")]
         public async Task<ActionResult> EditAnswer([FromBody] AnswerEditInputDto input)
         {
-        var user = await _context.User.SingleOrDefaultAsync(u => u.Username == input.Username);
-        if (user == null) return BadRequest(new { message = "User not found!" });
-        if (user.IsAdmin == false) return BadRequest(new { message = "User is not an admin!" });
-        var answerToEdit = await _context.Answer.SingleOrDefaultAsync(a => a.AnswerId == input.AnswerId);
-        if (answerToEdit == null)
-        {
-            return BadRequest(new { message = "Answer not found!" });
-        }
-        var otherAnswers = await _context.Answer
-            .Where(a => a.QuestionId == answerToEdit.QuestionId)
-            .ToListAsync();
-        answerToEdit.AnswerText = input.AnswerText;
-        if (answerToEdit.IsCorrect == false && input.IsCorrect == false)
-        {
-            answerToEdit.AnswerText = input.AnswerText;
-        }
-        else if (answerToEdit.IsCorrect == false && input.IsCorrect == true)
-        {
-            foreach (var answer in otherAnswers)
+            var user = await _context.User.SingleOrDefaultAsync(u => u.Username == input.Username);
+            if (user == null) return BadRequest(new { message = "User not found!" });
+            if (user.IsAdmin == false) return BadRequest(new { message = "User is not an admin!" });
+            var answerToEdit = await _context.Answer.SingleOrDefaultAsync(a => a.AnswerId == input.AnswerId);
+            if (answerToEdit == null)
             {
-                if (answer.AnswerId == input.AnswerId)
+                return BadRequest(new { message = "Answer not found!" });
+            }
+            var otherAnswers = await _context.Answer
+                .Where(a => a.QuestionId == answerToEdit.QuestionId)
+                .ToListAsync();
+            answerToEdit.AnswerText = input.AnswerText;
+            if (answerToEdit.IsCorrect == false && input.IsCorrect == false)
+            {
+                answerToEdit.AnswerText = input.AnswerText;
+            }
+            else if (answerToEdit.IsCorrect == false && input.IsCorrect == true)
+            {
+                foreach (var answer in otherAnswers)
                 {
-                    if(answer.IsCorrect == false && input.IsCorrect == true)
+                    if (answer.AnswerId == input.AnswerId)
                     {
-                        answer.IsCorrect = input.IsCorrect;
+                        if (answer.IsCorrect == false && input.IsCorrect == true)
+                        {
+                            answer.IsCorrect = input.IsCorrect;
+                        }
+                        else if (answer.IsCorrect == false && input.IsCorrect == false)
+                        {
+                            answer.IsCorrect = input.IsCorrect;
+                        }
+                        else if (answer.IsCorrect == true && input.IsCorrect == true)
+                        {
+                            answer.IsCorrect = input.IsCorrect;
+                        }
+                        else if (answer.IsCorrect == true && input.IsCorrect == false)
+                        {
+                            return BadRequest(new { message = "Invalid" });
+                        }
                     }
-                    else if (answer.IsCorrect == false && input.IsCorrect == false)
+                    else
                     {
-                        answer.IsCorrect = input.IsCorrect;
+                        answer.IsCorrect = false;
                     }
-                    else if (answer.IsCorrect == true && input.IsCorrect == true)
-                    {
-                        answer.IsCorrect = input.IsCorrect;
-                    }
-                    else if (answer.IsCorrect == true && input.IsCorrect == false)
-                    {
-                        return BadRequest(new { message = "Invalid" });
-                    }
-                }
-                else
-                {
-                    answer.IsCorrect = false;
                 }
             }
-        }
-        await _context.SaveChangesAsync();
-        return Ok(new { message = "Edit Answer successfully!"});
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Edit Answer successfully!" });
         }
     }
 }

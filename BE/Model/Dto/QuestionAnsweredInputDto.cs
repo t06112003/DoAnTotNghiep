@@ -10,7 +10,6 @@ namespace BE.Model.Dto
     {
         public string Username { get; set; }
         public long TestId { get; set; }
-        public string TestKey { get; set; }
         public List<AnswerInputDto> Answers { get; set; }
     }
 

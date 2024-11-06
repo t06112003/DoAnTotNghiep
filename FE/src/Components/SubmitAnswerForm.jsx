@@ -11,7 +11,6 @@ const SubmitAnswerForm = () => {
   const { userData, setUserData, showToast, setType, setMessage } = useContext(AppData);
 
   const [testId, setTestId] = useState("");
-  const [testKey, setTestKey] = useState("");
   const [answers, setAnswers] = useState([{ QuestionId: "", AnswerId: "" }]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -33,7 +32,6 @@ const SubmitAnswerForm = () => {
     const inputData = {
       Username: userData.username,
       TestId: parseInt(testId),
-      TestKey: testKey,
       Answers: answers.map((a) => ({
         QuestionId: (a.QuestionId),
         AnswerId: (a.AnswerId),
@@ -68,17 +66,6 @@ const SubmitAnswerForm = () => {
             type="number"
             value={testId}
             onChange={(e) => setTestId(e.target.value)}
-            required
-          />
-        </div>
-
-        {/* TestKey Input */}
-        <div>
-          <label>Test Key:</label>
-          <input
-            type="text"
-            value={testKey}
-            onChange={(e) => setTestKey(e.target.value)}
             required
           />
         </div>
