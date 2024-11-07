@@ -192,6 +192,19 @@ namespace BE.Controllers
             }
         }
 
+        [HttpGet("CheckUserTestCode")]
+        public async Task<ActionResult> CheckUserTestCode([FromQuery] UserCheckTestCodeInputDto input)
+        {
+            var user = await _context.User.SingleOrDefaultAsync(u => u.Username == input.Username);
+            if (user == null) return BadRequest(new { message = "User not found!" });
+            var test = await _context.Test.SingleOrDefaultAsync(t => t.TestId == input.TestId);
+            if (test == null) return BadRequest(new { message = "Test not found!" });
+            var userTestCode = await _context.UserTestCodeAssignment
+                .SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);
+            if (userTestCode == null) return BadRequest();
+            return Ok();
+        }
+
         [HttpGet("CheckIsAdmin")]
         public async Task<ActionResult> CheckIsAdmin([FromQuery] UserCheckIsAdminInputDto input)
         {

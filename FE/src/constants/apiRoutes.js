@@ -20,6 +20,7 @@ const API_ROUTES = {
     CHANGE_PASSWORD: '/User/ChangePassword',
     CHANGE_EMAIL: '/User/ChangeEmail',
     FORGET_PASSWORD: '/User/ForgetPassword',
+    CHECK_TEST_CODE: '/User/CheckUserTestCode',
     CHECK_IS_ADMIN: '/User/CheckIsAdmin',
     GET_INFO: '/User/GetInfo',
     USER_MARK_VIEW: '/UserMark/UserMarkView',

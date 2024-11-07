@@ -116,6 +116,11 @@ export const logOut = async (cleanUpData) => {
     cleanUpData();
 };
 
+export const checkTestCode = async (username, testId) => {
+    const response = await fetch(`${API_URL}${API_ROUTES.CHECK_TEST_CODE}?Username=${username}&TestId=${testId}`);
+    return response;
+};
+
 export const isAdmin = async (username) => {
     const response = await fetch(`${API_URL}${API_ROUTES.CHECK_IS_ADMIN}?Username=${username}`);
     return response;

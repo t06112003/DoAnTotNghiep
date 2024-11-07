@@ -135,11 +135,9 @@ namespace BE.Controllers
             if (test == null) return BadRequest(new { message = "Test not found!" });
             if (input.TestKey != test.TestKey) return BadRequest(new { message = "Wrong TestKey! Please try again!" });
             if (vietnamTime < test.BeginDate || vietnamTime > test.EndDate) return BadRequest(new { message = "Test is not available at this time!" });
-            var existingAssignment = await _context.UserTestCodeAssignment
-                .SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);
-            if (existingAssignment != null) return BadRequest(new { message = "You have already been assigned for this test!" });
             var userTestCode = await _context.UserTestCodeAssignment
                 .SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);
+
             long assignedCode;
             if (userTestCode == null)
             {

@@ -1,5 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { checkTestCode } from '../api/apiUser';
 import { getAllTestUser, randomTest } from '../api/apiTest';
 import '../styles/User.css';
 import { checkSession } from "../utils/checkSession";
@@ -34,10 +35,19 @@ const User = () => {
         }
     }, []);
 
-    const openTestKeyModal = (test) => {
-        setSelectedTest(test);
-        setIsModalOpen(true);
-        setTestKey('');
+    const openTestKeyModal = async (test) => {
+        try {
+            const response = await checkTestCode(userData.username, test.testId);
+            if (response.status == 200) {
+                navigate(`test/${test.testId}`);
+            } else {
+                setSelectedTest(test);
+                setIsModalOpen(true);
+                setTestKey('');
+            }
+        } catch (error) {
+            console.error('Error checking assignment:', error);
+        }
     };
 
     const handleTestKeySubmit = async () => {
