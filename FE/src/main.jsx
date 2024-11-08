@@ -8,6 +8,7 @@ import Admin from './Components/Admin';
 import QuestionDetails from './Components/QuestionDetails';
 import User from './Components/User';
 import Profile from './Components/Profile';
+import TestPage from './Components/TestPage';
 
 import "../src/styles/index.css";
 
@@ -42,6 +43,9 @@ const router = createBrowserRouter(
       <Route
         path="/profile"
         element={<Profile />} />
+      <Route
+        path='/user/test/:testId'
+        element={<TestPage />} />
     </Route>
   )
 );

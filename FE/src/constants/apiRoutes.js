@@ -9,6 +9,7 @@ const API_ROUTES = {
     DELETE_QUESTION: '/Question/DeleteQuestion',
     ASSIGN_QUESTION: '/Question/AssignRandomQuestions',
     QUESTION_ASSIGN_LIST: '/Question/QuestionAssignList',
+    QUESTION_ASSIGN: '/Question/QuestionAssign',
     TEST_LIST: '/Test/TestList',
     TEST_LIST_USER: '/Test/TestListForUser',
     CREATE_TEST: '/Test/CreateTest',

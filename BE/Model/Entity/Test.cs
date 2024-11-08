@@ -8,7 +8,6 @@ namespace BE.Model.Entity
     public class Test
     {
         public long TestId { get; set; }
-        
         public string TestName { get; set; }
         public string TestKey { get; set; }
         public DateTime BeginDate { get; set; }

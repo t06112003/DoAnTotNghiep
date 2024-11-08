@@ -110,11 +110,24 @@ export const getQuestionAssigned = async (testId) => {
     try {
         const response = await fetch(
             `${API_URL}${API_ROUTES.QUESTION_ASSIGN_LIST}?TestId=${testId}`, {
-                method: "GET",
-                headers: HEADER(),
-            });
+            method: "GET",
+            headers: HEADER(),
+        });
         return response;
     } catch (error) {
         console.log(error);
     }
 };
+
+export const getQuestionAssign = async (username, testId) => {
+    try {
+        const response = await fetch(
+            `${API_URL}${API_ROUTES.QUESTION_ASSIGN}?Username=${username}&TestId=${testId}`, {
+            method: "GET",
+            headers: HEADER(),
+        });
+        return response;
+    } catch (error) {
+        console.log(error);
+    }
+}

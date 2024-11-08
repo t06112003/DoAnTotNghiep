@@ -363,5 +363,42 @@ namespace BE.Controllers
                 }).ToListAsync();
             return Ok(randomTest);
         }
+
+        [Authorize]
+        [HttpGet("QuestionAssign")]
+        public async Task<ActionResult> QuestionAssign([FromQuery] QuestionAssignInputDto input)
+        {
+            var test = await _context.Test.SingleOrDefaultAsync(t => t.TestId == input.TestId);
+            if (test == null) return BadRequest(new { message = "Test not found!" });
+            var userAssignment = await _context.UserTestCodeAssignment
+                .FirstOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);
+            if (userAssignment == null) return BadRequest(new { message = "No assignment found for this user and test!" });
+
+            long assignedCode = userAssignment.Code;
+            var randomTest = await
+            (
+                from tqa in _context.TestQuestionAssignment
+                join q in _context.Question on tqa.QuestionId equals q.QuestionId
+                where tqa.TestId == input.TestId && tqa.Code == assignedCode
+                select new TestRandomOutputDto
+                {
+                    TestId = tqa.TestId,
+                    QuestionId = q.QuestionId,
+                    QuestionText = q.QuestionText,
+                    Answers = _context.Answer
+                        .Where(a => a.QuestionId == q.QuestionId)
+                        .Select(a => new AnswerRandomOutputDto
+                        {
+                            AnswerId = a.AnswerId,
+                            AnswerText = a.AnswerText
+                        })
+                        .OrderBy(a => Guid.NewGuid())
+                        .ToList(),
+                    Code = tqa.Code
+                }
+            ).ToListAsync();
+
+            return Ok(randomTest);
+        }
     }
 }
