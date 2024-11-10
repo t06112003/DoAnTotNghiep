@@ -38,15 +38,22 @@ const User = () => {
     const openTestKeyModal = async (test) => {
         try {
             const response = await checkTestCode(userData.username, test.testId);
+            const data = await response.json();
             if (response.status == 200) {
                 navigate(`test/${test.testId}`);
+            } else if (response.status == 404) {
+                setType("toast-error");
+                setMessage(data.message);
+                showToast();
             } else {
                 setSelectedTest(test);
                 setIsModalOpen(true);
                 setTestKey('');
             }
         } catch (error) {
-            console.error('Error checking assignment:', error);
+            setType("toast-error");
+            setMessage(error.message);
+            showToast();
         }
     };
 

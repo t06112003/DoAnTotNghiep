@@ -201,6 +201,7 @@ namespace BE.Controllers
             if (test == null) return BadRequest(new { message = "Test not found!" });
             var userTestCode = await _context.UserTestCodeAssignment
                 .SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);
+            if (vietnamTime > userTestCode.AssignmentTime + test.TestTime) return NotFound(new { message = "Test is overdue!" });
             if (userTestCode == null) return BadRequest();
             return Ok();
         }
