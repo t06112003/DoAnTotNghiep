@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { getQuestionAssign } from '../api/apiQuestion';
+import { getTestDetail, testRemainingTime } from '../api/apiTest'
 import { AppData } from "../Root";
 import '../styles/TestPage.css';
 
@@ -9,6 +10,8 @@ const TestPage = () => {
     const { userData } = useContext(AppData);
     const [questions, setQuestions] = useState([]);
     const [isLoading, setIsLoading] = useState();
+    const [testName, setTestName] = useState('');
+    const [remainTime, setRemainTime] = useState(0);
     const [answeredQuestions, setAnsweredQuestions] = useState({});
     const questionRefs = useRef([]);
 
@@ -23,6 +26,32 @@ const TestPage = () => {
         const headerHeight = 95;
         const questionPosition = questionRefs.current[index].offsetTop - headerHeight;
         window.scrollTo({ top: questionPosition, behavior: 'smooth' });
+    };
+
+    const fetchTestRemainingTime = async () => {
+        try {
+            const response = await testRemainingTime(userData.username, testId);
+            const data = await response.json();
+            if (response.ok) {
+                const [hours, minutes, seconds] = data.remainingTime.split(':').map(Number);
+                const timeInSeconds = hours * 3600 + minutes * 60 + seconds;
+                setRemainTime(timeInSeconds);
+            }
+        } catch (error) {
+            console.error('Error fetching test details:', error);
+        }
+    };
+
+    const fetchTestDetails = async () => {
+        try {
+            const response = await getTestDetail(testId);
+            if (response.length > 0) {
+                const data = response[0];
+                setTestName(data.testName);
+            }
+        } catch (error) {
+            console.error('Error fetching test details:', error);
+        }
     };
 
     useEffect(() => {
@@ -47,6 +76,28 @@ const TestPage = () => {
         fetchQuestions();
     }, [questions.length, testId, userData.username]);
 
+    useEffect(() => {
+        fetchTestDetails();
+        fetchTestRemainingTime();
+        if (remainTime > 0) {
+            const timer = setInterval(() => {
+                setRemainTime((prevTime) => {
+                    const updatedTime = prevTime - 1;
+                    return updatedTime;
+                });
+            }, 1000);
+
+            return () => clearInterval(timer);
+        }
+    }, [remainTime, testId]);
+
+    // Format remaining time to minutes and seconds
+    const formatTime = (time) => {
+        const minutes = Math.floor(time / 60);
+        const seconds = time % 60;
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    };
+
     if (isLoading) {
         return <p>Loading...</p>;
     }
@@ -59,7 +110,7 @@ const TestPage = () => {
         <div className="page-container">
             {/* Test Content Container */}
             <div className="test-content">
-                <h2 className="test-header">Your Test</h2>
+                <h2 className="test-header">{testName}</h2>
                 <ul className="test-question-list">
                     {questions.map((question, index) => (
                         <li
@@ -109,6 +160,9 @@ const TestPage = () => {
                             {index + 1}
                         </button>
                     ))}
+                </div>
+                <div className="countdown-timer">
+                    <strong>Thời gian còn lại:</strong> {formatTime(remainTime)}
                 </div>
             </div>
         </div>

@@ -42,6 +42,26 @@ namespace BE.Controllers
             return test;
         }
 
+        [HttpGet("TestDetail")]
+        public async Task<ActionResult<List<TestDetailOutputDto>>> TestDetail([FromQuery] TestDetailInputDto input)
+        {
+            var test = await (
+                from Test in _context.Test
+                where Test.TestId == input.TestId
+                select new TestDetailOutputDto()
+                {
+                    TestId = Test.TestId,
+                    TestName = Test.TestName,
+                    TestKey = Test.TestKey,
+                    BeginDate = Test.BeginDate,
+                    EndDate = Test.EndDate,
+                    TestTime = Test.TestTime,
+                })
+            .ToListAsync();
+
+            return test;
+        }
+
         [HttpGet("TestListForUser")]
         public async Task<ActionResult<List<TestListOutputDto>>> TestListForUser()
         {
@@ -193,6 +213,45 @@ namespace BE.Controllers
             {
                 randomTest,
                 isAssigned = true
+            });
+        }
+
+        [Authorize]
+        [HttpGet("TestRemainingTime")]
+        public async Task<ActionResult<TestRemainingTimeOutputDto>> TestRemainingTime([FromQuery] TestRemainingTimeInputDto input)
+        {
+            var user = await _context.User.SingleOrDefaultAsync(u => u.Username == input.Username);
+            if (user == null)
+                return BadRequest(new { message = "User not found!" });
+
+            var test = await _context.Test.SingleOrDefaultAsync(t => t.TestId == input.TestId);
+            if (test == null)
+                return BadRequest(new { message = "Test not found!" });
+
+            // Calculate the current time adjusted to Vietnam timezone
+            var vietnamTime = DateTime.UtcNow.AddHours(7);
+
+            var remainTimeQuery =
+                from Test in _context.Test
+                join UserTestCodeAssignment in _context.UserTestCodeAssignment
+                    on Test.TestId equals UserTestCodeAssignment.TestId
+                where UserTestCodeAssignment.TestId == input.TestId && UserTestCodeAssignment.Username == input.Username
+                select new
+                {
+                    RemainingTime = Test.TestTime - (vietnamTime - UserTestCodeAssignment.AssignmentTime)
+                };
+
+            var remainTimeResult = await remainTimeQuery.FirstOrDefaultAsync();
+            if (remainTimeResult == null)
+                return BadRequest(new { message = "Test assignment not found for this user." });
+
+            // Ensure RemainingTime is non-negative
+            var remainingTime = remainTimeResult.RemainingTime < TimeSpan.Zero ? TimeSpan.Zero : remainTimeResult.RemainingTime;
+            var formattedRemainingTime = $"{remainingTime.Hours:D2}:{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}";
+
+            return Ok(new TestRemainingTimeOutputDto
+            {
+                RemainingTime = formattedRemainingTime
             });
         }
 

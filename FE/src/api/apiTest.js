@@ -9,6 +9,12 @@ export const getAllTest = async () => {
     return data;
 };
 
+export const getTestDetail = async (testId) => {
+    const response = await fetch(`${API_URL}${API_ROUTES.TEST_DETAIL}?TestId=${testId}`);
+    const data = await response.json();
+    return data;
+}
+
 export const getAllTestUser = async () => {
     const response = await fetch(`${API_URL}${API_ROUTES.TEST_LIST_USER}`);
     const data = await response.json();
@@ -67,6 +73,18 @@ export const randomTest = async (username, testId, testKey) => {
         console.log(error);
     }
 };
+
+export const testRemainingTime = async (username, testId) => {
+    try {
+        const response = await fetch(`${API_URL}${API_ROUTES.TEST_REMAINING_TIME}?Username=${username}&TestId=${testId}`, {
+            method: "GET",
+            headers: HEADER(),
+        });
+        return response;
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 export const markViewTest = async (
     username = "",
