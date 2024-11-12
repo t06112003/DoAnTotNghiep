@@ -1,8 +1,9 @@
 import { useEffect, useState, useContext, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { getQuestionAssign } from '../api/apiQuestion';
-import { getTestDetail, testRemainingTime } from '../api/apiTest'
+import { getTestDetail, testRemainingTime } from '../api/apiTest';
 import { AppData } from "../Root";
+import Timer from './Shared/Timer';
 import '../styles/TestPage.css';
 
 const TestPage = () => {
@@ -11,7 +12,7 @@ const TestPage = () => {
     const [questions, setQuestions] = useState([]);
     const [isLoading, setIsLoading] = useState();
     const [testName, setTestName] = useState('');
-    const [remainTime, setRemainTime] = useState(0);
+    const [initialRemainTime, setInitialRemainTime] = useState(0);
     const [answeredQuestions, setAnsweredQuestions] = useState({});
     const questionRefs = useRef([]);
 
@@ -35,7 +36,7 @@ const TestPage = () => {
             if (response.ok) {
                 const [hours, minutes, seconds] = data.remainingTime.split(':').map(Number);
                 const timeInSeconds = hours * 3600 + minutes * 60 + seconds;
-                setRemainTime(timeInSeconds);
+                setInitialRemainTime(timeInSeconds);
             }
         } catch (error) {
             console.error('Error fetching test details:', error);
@@ -79,24 +80,7 @@ const TestPage = () => {
     useEffect(() => {
         fetchTestDetails();
         fetchTestRemainingTime();
-        if (remainTime > 0) {
-            const timer = setInterval(() => {
-                setRemainTime((prevTime) => {
-                    const updatedTime = prevTime - 1;
-                    return updatedTime;
-                });
-            }, 1000);
-
-            return () => clearInterval(timer);
-        }
-    }, [remainTime, testId]);
-
-    // Format remaining time to minutes and seconds
-    const formatTime = (time) => {
-        const minutes = Math.floor(time / 60);
-        const seconds = time % 60;
-        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    };
+    }, [testId]);
 
     if (isLoading) {
         return <p>Loading...</p>;
@@ -108,7 +92,6 @@ const TestPage = () => {
 
     return (
         <div className="page-container">
-            {/* Test Content Container */}
             <div className="test-content">
                 <h2 className="test-header">{testName}</h2>
                 <ul className="test-question-list">
@@ -146,24 +129,20 @@ const TestPage = () => {
                 </ul>
             </div>
 
-            {/* Sticky Sidebar for Question List */}
             <div className="question-sidebar">
                 <h3>Danh sách câu hỏi</h3>
                 <div className="question-list">
                     {questions.map((_, index) => (
                         <button
                             key={index}
-                            className={`question-number ${answeredQuestions[questions[index].questionId] ? 'answered' : ''
-                                }`}
+                            className={`question-number ${answeredQuestions[questions[index].questionId] ? 'answered' : ''}`}
                             onClick={() => scrollToQuestion(index)}
                         >
                             {index + 1}
                         </button>
                     ))}
                 </div>
-                <div className="countdown-timer">
-                    <strong>Thời gian còn lại:</strong> {formatTime(remainTime)}
-                </div>
+                <Timer initialTime={initialRemainTime} />
             </div>
         </div>
     );

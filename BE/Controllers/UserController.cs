@@ -200,9 +200,9 @@ namespace BE.Controllers
             var test = await _context.Test.SingleOrDefaultAsync(t => t.TestId == input.TestId);
             if (test == null) return BadRequest(new { message = "Test not found!" });
             var userTestCode = await _context.UserTestCodeAssignment
-                .SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);
-            if (vietnamTime > userTestCode.AssignmentTime + test.TestTime) return NotFound(new { message = "Test is overdue!" });
+                .SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);    
             if (userTestCode == null) return BadRequest();
+            if (vietnamTime > userTestCode.AssignmentTime + test.TestTime) return NotFound(new { message = "Test is overdue!" });
             return Ok();
         }
 

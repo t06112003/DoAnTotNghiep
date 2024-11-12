@@ -157,7 +157,6 @@ namespace BE.Controllers
             if (vietnamTime < test.BeginDate || vietnamTime > test.EndDate) return BadRequest(new { message = "Test is not available at this time!" });
             var userTestCode = await _context.UserTestCodeAssignment
                 .SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);
-            if (vietnamTime > userTestCode.AssignmentTime + test.TestTime) return BadRequest(new { message = "Test is overdue!" });
             long assignedCode;
             if (userTestCode == null)
             {
@@ -187,7 +186,7 @@ namespace BE.Controllers
             {
                 assignedCode = userTestCode.Code;
             }
-
+            if (vietnamTime > userTestCode.AssignmentTime + test.TestTime) return BadRequest(new { message = "Test is overdue!" });
             var randomTest = await
             (
                 from tqa in _context.TestQuestionAssignment

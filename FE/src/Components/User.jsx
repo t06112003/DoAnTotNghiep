@@ -38,12 +38,11 @@ const User = () => {
     const openTestKeyModal = async (test) => {
         try {
             const response = await checkTestCode(userData.username, test.testId);
-            const data = await response.json();
             if (response.status == 200) {
                 navigate(`test/${test.testId}`);
             } else if (response.status == 404) {
                 setType("toast-error");
-                setMessage(data.message);
+                setMessage("Test is overdue");
                 showToast();
             } else {
                 setSelectedTest(test);
@@ -73,7 +72,6 @@ const User = () => {
             setType("toast-error");
             setMessage(error.message);
             showToast();
-            console.error(error);
         }
     };
 
