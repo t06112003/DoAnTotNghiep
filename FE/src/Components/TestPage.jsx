@@ -1,26 +1,56 @@
 import { useEffect, useState, useContext, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { getQuestionAssign } from '../api/apiQuestion';
-import { getTestDetail, testRemainingTime } from '../api/apiTest';
+import { getTestDetail, testRemainingTime } from '../api/apiTest'
 import { AppData } from "../Root";
+import { submitAnswer } from '../api/apiAnswer';
 import Timer from './Shared/Timer';
 import '../styles/TestPage.css';
 
 const TestPage = () => {
     const { testId } = useParams();
-    const { userData } = useContext(AppData);
+    const { userData, showToast, setType, setMessage } = useContext(AppData);
     const [questions, setQuestions] = useState([]);
     const [isLoading, setIsLoading] = useState();
     const [testName, setTestName] = useState('');
-    const [initialRemainTime, setInitialRemainTime] = useState(0);
+    const [remainTime, setRemainTime] = useState(0);
     const [answeredQuestions, setAnsweredQuestions] = useState({});
     const questionRefs = useRef([]);
 
-    const handleAnswerSelection = (questionId) => {
+    const handleAnswerSelection = (questionId, answerId) => {
         setAnsweredQuestions((prev) => ({
             ...prev,
-            [questionId]: true,
+            [questionId]: answerId,
         }));
+
+        const updatedAnswers = {
+            ...answeredQuestions,
+            [questionId]: answerId,
+        };
+        const storageKey = `test-${testId}-${userData.username}-answers`;
+        sessionStorage.setItem(storageKey, JSON.stringify(updatedAnswers));
+    };
+
+    const handleSubmit = async () => {
+        const inputData = {
+            username: userData.username,
+            testId: testId,
+            answers: Object.keys(answeredQuestions).map((questionId) => ({
+                questionId: Number(questionId),
+                answerId: answeredQuestions[questionId],
+            })),
+        };
+
+        try {
+            const response = await submitAnswer(inputData);
+            setMessage(response.message || "Answers submitted successfully!");
+            setType("toast-success");
+            showToast();
+        } catch (error) {
+            setMessage(error.message || "Failed to submit answers.");
+            setType("toast-error");
+            showToast();
+        }
     };
 
     const scrollToQuestion = (index) => {
@@ -36,7 +66,7 @@ const TestPage = () => {
             if (response.ok) {
                 const [hours, minutes, seconds] = data.remainingTime.split(':').map(Number);
                 const timeInSeconds = hours * 3600 + minutes * 60 + seconds;
-                setInitialRemainTime(timeInSeconds);
+                setRemainTime(timeInSeconds);
             }
         } catch (error) {
             console.error('Error fetching test details:', error);
@@ -55,32 +85,40 @@ const TestPage = () => {
         }
     };
 
-    useEffect(() => {
-        const fetchQuestions = async () => {
-            if (questions.length === 0) {
-                try {
-                    setIsLoading(true);
-                    const response = await getQuestionAssign(userData.username, testId);
-                    if (response.ok) {
-                        const data = await response.json();
-                        setQuestions(data);
-                    } else {
-                        console.error("Failed to load questions.");
-                    }
-                } catch (error) {
-                    console.error("Error fetching questions:", error);
-                } finally {
-                    setIsLoading(false);
+    const fetchQuestions = async () => {
+        if (questions.length === 0) {
+            try {
+                setIsLoading(true);
+                const response = await getQuestionAssign(userData.username, testId);
+                if (response.ok) {
+                    const data = await response.json();
+                    setQuestions(data);
+                } else {
+                    console.error("Failed to load questions.");
                 }
+            } catch (error) {
+                console.error("Error fetching questions:", error);
+            } finally {
+                setIsLoading(false);
             }
-        };
+        }
+    };
+
+    useEffect(() => {
         fetchQuestions();
     }, [questions.length, testId, userData.username]);
 
     useEffect(() => {
         fetchTestDetails();
         fetchTestRemainingTime();
-    }, [testId]);
+
+        // Retrieve answers for the current user and test
+        const storageKey = `test-${testId}-${userData.username}-answers`;
+        const savedAnswers = sessionStorage.getItem(storageKey);
+        if (savedAnswers) {
+            setAnsweredQuestions(JSON.parse(savedAnswers));
+        }
+    }, [testId, userData.username]);
 
     if (isLoading) {
         return <p>Loading...</p>;
@@ -113,7 +151,8 @@ const TestPage = () => {
                                                 id={`answer-${answer.answerId}`}
                                                 name={`question-${question.questionId}`}
                                                 className="test-answer-input"
-                                                onChange={() => handleAnswerSelection(question.questionId)}
+                                                checked={answeredQuestions[question.questionId] === answer.answerId}
+                                                onChange={() => handleAnswerSelection(question.questionId, answer.answerId)}
                                             />
                                             <label htmlFor={`answer-${answer.answerId}`} className="test-answer-label">
                                                 <span className="test-answer-label-letter">
@@ -142,7 +181,10 @@ const TestPage = () => {
                         </button>
                     ))}
                 </div>
-                <Timer initialTime={initialRemainTime} />
+                <Timer initialTime={remainTime} />
+                <button onClick={handleSubmit} className="submit-button">
+                    Submit Answers
+                </button>
             </div>
         </div>
     );
