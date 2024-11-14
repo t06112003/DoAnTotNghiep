@@ -14,5 +14,6 @@ namespace BE.Model.Entity
         public double QuestionMark { get; set; }
         public ICollection<TestQuestionAssignment> TestQuestionAssignment { get; set; }
         public ICollection<Answer> Answers { get; set; }
+        public Test Test { get; set; }
     }
 }

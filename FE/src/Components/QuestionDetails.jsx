@@ -136,15 +136,19 @@ const QuestionDetails = () => {
     const indexOfFirstQuestion = indexOfLastQuestion - questionsPerPage;
     const currentQuestion = questions.slice(indexOfFirstQuestion, indexOfLastQuestion);
 
-    useEffect(() => {
-        const totalPages = Math.ceil(questions.length / questionsPerPage);
+    const calculateAndSetCurrentPage = (questionsLength) => {
+        const totalPages = Math.ceil(questionsLength / questionsPerPage);
         if (currentPage > totalPages) {
             setCurrentPage(totalPages);
         } else if (currentPage < 1) {
             setCurrentPage(1);
         }
-    }, [questions.length, questionsPerPage, currentPage]);
-
+    };
+    
+    useEffect(() => {
+        calculateAndSetCurrentPage(questions.length);
+    }, [questions.length]);
+    
     const nextPage = () => {
         if (currentPage < Math.ceil(questions.length / questionsPerPage)) {
             setCurrentPage(currentPage + 1);

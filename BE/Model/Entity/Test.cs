@@ -14,5 +14,7 @@ namespace BE.Model.Entity
         public TimeSpan TestTime { get; set; }
         public DateTime EndDate { get; set; }
         public ICollection<TestQuestionAssignment> TestQuestionAssignment { get; set; }
+        public ICollection<Question> Question { get; set; }
+        public ICollection<UserTestCodeAssignment> UserTestCodeAssignment { get; set; }
     }
 }

@@ -39,6 +39,16 @@ namespace BE.Context
             .HasOne(tqa => tqa.Question)
             .WithMany(q => q.TestQuestionAssignment)
             .HasForeignKey(tqa => tqa.QuestionId);
+
+            modelBuilder.Entity<Test>()
+            .HasMany(t => t.Question)
+            .WithOne(q => q.Test)
+            .HasForeignKey(q => q.TestId);
+
+            modelBuilder.Entity<Test>()
+            .HasMany(t => t.UserTestCodeAssignment)
+            .WithOne(u => u.Test)
+            .HasForeignKey(u => u.TestId);
         }
     }
 }

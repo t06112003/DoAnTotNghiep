@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { createTest, getAllTest, editTest } from "../api/apiTest";
+import { createTest, getAllTest, editTest, deleteTest } from "../api/apiTest";
 import { useNavigate } from "react-router-dom";
 import { checkSession } from "../utils/checkSession";
 import { AppData } from "../Root";
@@ -132,6 +132,27 @@ const Admin = () => {
         }
     };
 
+    const handleDeleteTest = async (testId) => {
+        try {
+            const response = await deleteTest(userData.username, testId);
+            const data = await response.json();
+            if (response.ok) {
+                setType("toast-success");
+                setMessage("Test deleted successfully!");
+                showToast();
+                fetchTests();
+            } else {
+                setType("toast-error");
+                setMessage(data.message);
+                showToast();
+            }
+        } catch (error) {
+            setType("toast-error");
+            setMessage(error.message);
+            showToast();
+        }
+    };
+
     useEffect(() => {
         if (!checkSession()) {
             navigate("/");
@@ -218,8 +239,8 @@ const Admin = () => {
             <div className="test-list">
                 <h3>Tests</h3>
                 <ul>
-                    {currentTests.map((test, index) => (
-                        <li key={index} className="test-item" onClick={() => { navigate(`test/${test.testId}`) }}>
+                    {currentTests.map((test) => (
+                        <li key={test.testId} className="test-item" onClick={() => { navigate(`test/${test.testId}`) }}>
                             <span className="test-name">{test.testName}</span>
                             <span className="test-date">{new Date(test.beginDate).toISOString().split('T')[0]}</span>
                             <div className="action-buttons">
@@ -230,6 +251,7 @@ const Admin = () => {
                                 }}></button>
                                 <button className="delete-btn" onClick={(e) => {
                                     e.stopPropagation();
+                                    handleDeleteTest(test.testId);
                                 }}></button>
                             </div>
                         </li>

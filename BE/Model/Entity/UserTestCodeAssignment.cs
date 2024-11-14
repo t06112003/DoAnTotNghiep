@@ -12,5 +12,6 @@ namespace BE.Model.Entity
         public long TestId { get; set; }
         public long Code { get; set; }
         public DateTime AssignmentTime { get; set; }
+        public Test Test { get; set; }
     }
 }

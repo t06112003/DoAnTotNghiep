@@ -146,6 +146,40 @@ namespace BE.Controllers
         }
 
         [Authorize]
+        [HttpDelete("DeleteTest")]
+        public async Task<ActionResult> DeleteTest([FromBody] TestDeleteInputDto input)
+        {
+            var user = await _context.User.SingleOrDefaultAsync(u => u.Username == input.Username);
+            if (user == null) return BadRequest(new { message = "User not found!" });
+            if (user.IsAdmin == false) return BadRequest(new { message = "User is not an admin!" });
+            var question = await _context.Question.Where(q => q.TestId == input.TestId).ToListAsync();
+            var emailLogs = await _context.EmailLog.Where(el => el.TestId == input.TestId).ToListAsync();
+            var userTestCode = await _context.UserTestCodeAssignment.Where(utc => utc.TestId == input.TestId).ToListAsync();
+            var userMark = await _context.UserMark.Where(um => um.TestId == input.TestId).ToListAsync();
+            var test = await _context.Test.SingleOrDefaultAsync(t => t.TestId == input.TestId);
+            var answer = await _context.Answer
+                .Where(a => question.Select(q => q.QuestionId).Contains(a.QuestionId))
+                .ToListAsync();
+            var testQuestionAssignments = await _context.TestQuestionAssignment
+                .Where(tqa => question.Select(q => q.QuestionId).Contains(tqa.QuestionId))
+                .ToListAsync();
+
+            if (test == null) return NotFound(new { message = "Test not found!" });
+            else
+            {
+                _context.Test.Remove(test);
+                _context.Question.RemoveRange(question);
+                _context.Answer.RemoveRange(answer);
+                _context.EmailLog.RemoveRange(emailLogs);
+                _context.UserTestCodeAssignment.RemoveRange(userTestCode);
+                _context.UserMark.RemoveRange(userMark);
+                _context.TestQuestionAssignment.RemoveRange(testQuestionAssignments);
+                await _context.SaveChangesAsync();
+            }
+            return Ok(new { message = "Delete Test successfully!" });
+        }
+
+        [Authorize]
         [HttpGet("RandomTest")]
         public async Task<ActionResult<List<TestRandomOutputDto>>> RandomQuestion([FromQuery] TestRandomInputDto input)
         {
@@ -208,11 +242,7 @@ namespace BE.Controllers
                         .ToList(),
                     Code = tqa.Code
                 }).ToListAsync();
-            return Ok(new
-            {
-                randomTest,
-                isAssigned = true
-            });
+            return Ok(randomTest);
         }
 
         [Authorize]
@@ -227,7 +257,6 @@ namespace BE.Controllers
             if (test == null)
                 return BadRequest(new { message = "Test not found!" });
 
-            // Calculate the current time adjusted to Vietnam timezone
             var vietnamTime = DateTime.UtcNow.AddHours(7);
 
             var remainTimeQuery =
@@ -244,7 +273,6 @@ namespace BE.Controllers
             if (remainTimeResult == null)
                 return BadRequest(new { message = "Test assignment not found for this user." });
 
-            // Ensure RemainingTime is non-negative
             var remainingTime = remainTimeResult.RemainingTime < TimeSpan.Zero ? TimeSpan.Zero : remainTimeResult.RemainingTime;
             var formattedRemainingTime = $"{remainingTime.Hours:D2}:{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}";
 
