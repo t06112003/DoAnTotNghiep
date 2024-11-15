@@ -177,7 +177,25 @@ namespace BE.Controllers
                 _context.TestQuestionAssignment.RemoveRange(testQuestionAssignments);
                 await _context.SaveChangesAsync();
             }
-            return Ok(new { message = "Delete Test successfully!" });
+            return Ok(new { message = "Delete Test Successfully!" });
+        }
+
+        [Authorize]
+        [HttpDelete("DeleteTestCode")]
+        public async Task<ActionResult> DeleteTestCode([FromBody] TestDeleteCodeInputDto input)
+        {
+            var user = await _context.User.SingleOrDefaultAsync(u => u.Username == input.Username);
+            if (user == null) return BadRequest(new { message = "User not found!" });
+            if (user.IsAdmin == false) return BadRequest(new { message = "User is not an admin!" });
+            var test = await _context.Test.SingleOrDefaultAsync(t => t.TestId == input.TestId);
+            if (test == null) return BadRequest(new { message = "Test not found!" });
+            var testCodeAssignments = await _context.TestQuestionAssignment
+                .Where(tqa => tqa.TestId == input.TestId && tqa.Code == input.Code)
+                .ToListAsync();
+            if (!testCodeAssignments.Any()) return NotFound(new { message = "No test code assignments found with the specified code and test ID." });
+            _context.TestQuestionAssignment.RemoveRange(testCodeAssignments);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Delete Test Code Successfully!" });
         }
 
         [Authorize]
@@ -329,7 +347,7 @@ namespace BE.Controllers
                 where um.TestId == input.TestId
                 select new
                 {
-                    Username = u.Username,
+                    Name = u.Name,
                     Mark = um.Mark
                 }
             ).ToListAsync();
@@ -340,12 +358,12 @@ namespace BE.Controllers
             {
                 var worksheet = package.Workbook.Worksheets.Add("Test Results");
 
-                worksheet.Cells[1, 1].Value = "Username";
+                worksheet.Cells[1, 1].Value = "Name";
                 worksheet.Cells[1, 2].Value = "Mark";
 
                 for (int i = 0; i < testResults.Count; i++)
                 {
-                    worksheet.Cells[i + 2, 1].Value = testResults[i].Username;
+                    worksheet.Cells[i + 2, 1].Value = testResults[i].Name;
                     worksheet.Cells[i + 2, 2].Value = testResults[i].Mark;
                 }
 

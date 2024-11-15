@@ -37,7 +37,6 @@ const Header = () => {
             <span className="user-name">{userData.name}</span>
             <div className="dropdown-content">
               <Link to="/profile">Thông tin cá nhân</Link>
-              <Link to="/change-password">Đổi mật khẩu</Link>
               <button onClick={handleLogout}>Đăng xuất</button>
             </div>
           </div>
