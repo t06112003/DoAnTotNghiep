@@ -31,7 +31,6 @@ public class ZeroScoreService : IHostedService, IDisposable
         _logger.LogInformation("ZeroScoreService is starting...");
         ScheduleExistingTests();
         
-        // Start a periodic timer to check for new tests every minute
         _checkNewTestsTimer = new Timer(CheckForNewTests, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
         
         return Task.CompletedTask;
@@ -131,14 +130,12 @@ public class ZeroScoreService : IHostedService, IDisposable
     {
         _logger.LogInformation("ZeroScoreService is stopping...");
         
-        // Stop all individual test timers
         foreach (var timer in _testTimers.Values)
         {
             timer?.Change(Timeout.Infinite, 0);
             timer?.Dispose();
         }
         
-        // Stop the periodic check timer
         _checkNewTestsTimer?.Change(Timeout.Infinite, 0);
         _checkNewTestsTimer?.Dispose();
         

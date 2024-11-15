@@ -124,7 +124,6 @@ namespace BE.Controllers
                         var paragraphs = doc.MainDocumentPart.Document.Body.Elements<DocumentFormat.OpenXml.Wordprocessing.Paragraph>();
                         var text = string.Join("\n", paragraphs.Select(p => p.InnerText));
 
-                        // Tách các khối câu hỏi bằng ký hiệu `//`
                         var questionBlocks = text.Split(new[] { "//" }, StringSplitOptions.RemoveEmptyEntries)
                                                   .Select(block => block.Trim())
                                                   .Where(block => !string.IsNullOrWhiteSpace(block))
@@ -134,7 +133,6 @@ namespace BE.Controllers
 
                         foreach (var block in questionBlocks)
                         {
-                            // Chia block thành các dòng (câu hỏi và câu trả lời)
                             var lines = block.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
                                              .Select(line => line.Trim())
                                              .ToList();
@@ -143,8 +141,6 @@ namespace BE.Controllers
                             {
                                 return BadRequest(new { message = "Each question must have at least one question and one answer." });
                             }
-
-                            // Xử lý câu hỏi và trích xuất độ khó và điểm
                             string questionText = lines[0];
                             string difficulty = "Medium";
                             int mark = 1;
@@ -156,8 +152,6 @@ namespace BE.Controllers
                                 difficulty = match.Groups["difficulty"].Value;
                                 mark = int.Parse(match.Groups["mark"].Value);
                             }
-
-                            // Xử lý các câu trả lời
                             var answers = lines.Skip(1)
                                                .Where(line => !string.IsNullOrWhiteSpace(line))
                                                .Select(line =>

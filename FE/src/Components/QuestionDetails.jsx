@@ -190,12 +190,12 @@ const QuestionDetails = () => {
 
     const nextCodePage = () => {
         setCurrentCodePage((prev) => (prev + 1) % totalCodePages);
-        setCurrentQuestionPage(1); // Reset question page for new code
+        setCurrentQuestionPage(1);
     };
 
     const prevCodePage = () => {
         setCurrentCodePage((prev) => (prev - 1 + totalCodePages) % totalCodePages);
-        setCurrentQuestionPage(1); // Reset question page for new code
+        setCurrentQuestionPage(1);
     };
 
     const nextQuestionPage = () => setCurrentQuestionPage((prev) => prev + 1);

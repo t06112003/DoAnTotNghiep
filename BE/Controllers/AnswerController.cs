@@ -63,6 +63,8 @@ namespace BE.Controllers
             if (test == null) return BadRequest(new { message = "Test not found!" });
             var existingAssignment = await _context.UserTestCodeAssignment.SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);
             if (existingAssignment == null) return BadRequest(new { message = "You have not assigned for the test yet!" });
+            var existingMark = await _context.UserMark.AnyAsync(um => um.UserId == user.UserId && um.TestId == input.TestId);
+            if (existingMark) return BadRequest(new { message = "You have already submitted answers for this test!" });
             if (vietnamTime < test.BeginDate) return BadRequest(new { message = "Test time has not yet begun" });
             if (vietnamTime > test.EndDate) return BadRequest(new { message = "The test is overdue" });
             if (vietnamTime > existingAssignment.AssignmentTime + test.TestTime) return BadRequest(new { message = "The test is overdue" });

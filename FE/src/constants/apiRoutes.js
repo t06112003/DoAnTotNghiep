@@ -19,6 +19,7 @@ const API_ROUTES = {
     RANDOM_TEST: '/Test/RandomTest',
     TEST_REMAINING_TIME :'/Test/TestRemainingTime',
     MARK_VIEW: '/Test/MarkViewbyTest',
+    EXPORT_TEST: '/Test/ExportTestResults',
     LOGIN: '/User/Login', 
     IMPORT_USERS: '/User/ImportUsers',
     CHANGE_PASSWORD: '/User/ChangePassword',

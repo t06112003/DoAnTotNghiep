@@ -9,6 +9,7 @@ using BE.Model.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 
 namespace BE.Controllers
 {
@@ -310,6 +311,53 @@ namespace BE.Controllers
                 test = sortAscending ? test.OrderBy(t => t.Mark) : test.OrderByDescending(d => d.Mark);
             }
             return await test.ToListAsync();
+        }
+
+        [Authorize]
+        [HttpGet("ExportTestResults")]
+        public async Task<IActionResult> ExportTestResults([FromQuery] TestExportInputDto input)
+        {
+            var user = await _context.User.SingleOrDefaultAsync(u => u.Username == input.Username);
+            if (user == null) return BadRequest(new { message = "User not found!" });
+            if (user.IsAdmin == false) return BadRequest(new { message = "User not a admin!" });
+            var test = await _context.Test.SingleOrDefaultAsync(t => t.TestId == input.TestId);
+            if (test == null) return NotFound(new { message = "Test not found!" });
+
+            var testResults = await (
+                from um in _context.UserMark
+                join u in _context.User on um.UserId equals u.UserId
+                where um.TestId == input.TestId
+                select new
+                {
+                    Username = u.Username,
+                    Mark = um.Mark
+                }
+            ).ToListAsync();
+
+            var fileName = $"{test.TestName}.xlsx";
+
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Test Results");
+
+                worksheet.Cells[1, 1].Value = "Username";
+                worksheet.Cells[1, 2].Value = "Mark";
+
+                for (int i = 0; i < testResults.Count; i++)
+                {
+                    worksheet.Cells[i + 2, 1].Value = testResults[i].Username;
+                    worksheet.Cells[i + 2, 2].Value = testResults[i].Mark;
+                }
+
+                worksheet.Cells[1, 1, 1, 2].Style.Font.Bold = true;
+                worksheet.Cells.AutoFitColumns();
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+                stream.Position = 0;
+
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
         }
     }
 }

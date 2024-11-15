@@ -3,6 +3,7 @@ import { AppData } from '../Root';
 import { changeEmail, changePassword, getEmail, getName, importUsers, isAdmin } from '../api/apiUser';
 import { sendOTP } from '../api/apiOTP';
 import { getServiceStatus } from '../api/apiService';
+import { exportTest } from '../api/apiTest';
 import '../styles/Profile.css';
 import { useNavigate } from 'react-router-dom';
 import { checkSession } from "../utils/checkSession";
@@ -14,7 +15,7 @@ const Profile = () => {
     const [isChangingPassword, setIsChangingPassword] = useState(false);
     const [isAdminUser, setIsAdminUser] = useState(false);
     const [file, setFile] = useState(null);
-
+    const [testId, setTestId] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
 
@@ -170,6 +171,45 @@ const Profile = () => {
         }
     };
 
+    const handleExport = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await exportTest(userData.username, testId);
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+
+                const contentDisposition = response.headers.get('content-disposition');
+                const fileName = contentDisposition 
+                    ? contentDisposition.split('fileName=')[1].replace(/"/g, '') 
+                    : 'test-results.xlsx';
+                link.setAttribute('download', fileName);
+
+                document.body.appendChild(link);
+                link.click();
+                link.parentNode.removeChild(link);
+
+                setType("toast-success");
+                setMessage("Export Successfully");
+                showToast();
+                setTestId('')
+            } else {
+                const data = await response.json();
+                setType("toast-error");
+                setMessage(data.message || "Failed to export test results");
+                showToast();
+            }
+        } catch (error) {
+            setType("toast-error");
+            setMessage("An error occurred during export");
+            showToast();
+            console.error("Error exporting test results:", error);
+        }
+    };
+
     useEffect(() => {
         if (!checkSession()) {
             navigate("/");
@@ -312,6 +352,21 @@ const Profile = () => {
                 </div>
             )}
 
+            {isAdminUser && (
+                <div className="export-test-container">
+                    <h3>Export Test Results</h3>
+                    <form onSubmit={handleExport}>
+                        <input
+                            type="text"
+                            placeholder="Enter Test ID"
+                            value={testId}
+                            onChange={(e) => setTestId(e.target.value)}
+                            required
+                        />
+                        <button type="submit">Export Results</button>
+                    </form>
+                </div>
+            )}
         </div>
     );
 }

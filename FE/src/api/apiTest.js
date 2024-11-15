@@ -122,3 +122,15 @@ export const markViewTest = async (
         console.log(error);
     }
 };
+
+export const exportTest = async (username, testId) => {
+    try {
+        const response = await fetch(`${API_URL}${API_ROUTES.EXPORT_TEST}?Username=${username}&TestId=${testId}`, {
+            method: "GET",
+            headers: HEADER(),
+        });
+        return response;
+    } catch (error) {
+        console.log(error);
+    }
+};
