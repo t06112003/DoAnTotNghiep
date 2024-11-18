@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, Navigate } from 'react-router-dom';
-import SubmitAnswerForm from './Components/SubmitAnswerForm';
 import Login from './Components/Login';
 import Root from './Root';
 import Admin from './Components/Admin';
@@ -25,10 +24,6 @@ const router = createBrowserRouter(
       <Route
         path='/login'
         element={<Login />}
-      />
-      <Route
-        path='/submit-answer'
-        element={<SubmitAnswerForm />}
       />
       <Route
         path='/admin'

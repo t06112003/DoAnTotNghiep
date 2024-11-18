@@ -24,7 +24,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:5173"));
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("Content-Disposition").AllowCredentials().WithOrigins("http://localhost:5173"));
 app.UseAuthentication();
 app.UseAuthorization();
 

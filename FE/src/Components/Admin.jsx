@@ -163,13 +163,6 @@ const Admin = () => {
         <div className="admin-cms-container">
             <h2>Admin CMS - Test Management</h2>
 
-            <div className="btn-group-test">
-                <button onClick={() => setIsModalOpen(true)} className="open-modal-btn">
-                    Create Test
-                </button>
-                <div className="plus-icon"></div>
-            </div>
-
             {isModalOpen && (
                 <div className="modal-overlay">
                     <div className="modal">
@@ -237,7 +230,16 @@ const Admin = () => {
             )}
 
             <div className="test-list">
-                <h3>Tests</h3>
+                <div className="create-test-container">
+                    <h3>Tests</h3>
+                    <div className="btn-group-test">
+                        <button onClick={() => setIsModalOpen(true)} className="open-modal-btn">
+                            Create Test
+                        </button>
+                        <div className="plus-icon"></div>
+                    </div>
+                </div>
+
                 <ul>
                     {currentTests.map((test) => (
                         <li key={test.testId} className="test-item" onClick={() => { navigate(`test/${test.testId}`) }}>

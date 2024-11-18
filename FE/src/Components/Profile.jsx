@@ -183,9 +183,12 @@ const Profile = () => {
                 link.href = url;
 
                 const contentDisposition = response.headers.get('content-disposition');
-                const fileName = contentDisposition 
-                    ? contentDisposition.split('fileName=')[1].replace(/"/g, '') 
-                    : 'test-results.xlsx';
+                const getFileNameFromContentDisposition = (contentDisposition) => {
+                    const filenameMatch = contentDisposition.match(/filename\s*=\s*["']?([^;"']+)/i);
+                    return filenameMatch[1];
+                };
+                const fileName = getFileNameFromContentDisposition(contentDisposition);
+
                 link.setAttribute('download', fileName);
 
                 document.body.appendChild(link);

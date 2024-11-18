@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import '../../styles/Timer.css'
 
 const Timer = React.memo(({ initialTime }) => {
     const [remainingTime, setRemainingTime] = useState(initialTime);

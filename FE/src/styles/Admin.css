@@ -6,6 +6,8 @@
     border-radius: 8px;
     background-color: #f9f9f9;
     position: relative;
+    margin-top: 24px;
+    margin-bottom: 40px;
 }
 
 .admin-cms-container h2 {
@@ -261,4 +263,10 @@
 .pagination-controls span {
     width: 290px;
     font-weight: bold;
+}
+
+.create-test-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }

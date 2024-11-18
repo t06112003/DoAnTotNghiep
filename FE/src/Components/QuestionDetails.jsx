@@ -2,6 +2,7 @@ import { useEffect, useState, useContext, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getAllQuestion, createQuestion, editQuestion, deleteQuestion, assignRandomQuestions, getQuestionAssigned, importQuestionsWord } from '../api/apiQuestion';
 import { editAnswer } from '../api/apiAnswer';
+import { deleteTestCode } from '../api/apiTest';
 import { AppData } from '../Root';
 import '../styles/QuestionDetails.css';
 import { checkSession } from "../utils/checkSession";
@@ -144,11 +145,11 @@ const QuestionDetails = () => {
             setCurrentPage(1);
         }
     };
-    
+
     useEffect(() => {
         calculateAndSetCurrentPage(questions.length);
     }, [questions.length]);
-    
+
     const nextPage = () => {
         if (currentPage < Math.ceil(questions.length / questionsPerPage)) {
             setCurrentPage(currentPage + 1);
@@ -388,6 +389,35 @@ const QuestionDetails = () => {
             setType("toast-error");
             setMessage(error.message || "Failed to edit Answer!");
             showToast();
+        }
+    };
+
+    const handleDeleteCode = async (code) => {
+        try {
+            const response = await deleteTestCode(userData.username, testId, code);
+            if (response.ok) {
+                setType("toast-success");
+                setMessage("Test code deleted successfully!");
+                showToast();
+    
+                // Update the UI after deletion
+                if (totalCodePages > 1) {
+                    nextCodePage(); // Navigate to the next code page if available
+                } else {
+                    setIsListAssignModalOpen(false); // Close modal if no codes are left
+                }
+                fetchAssignQuestions();
+            } else {
+                const errorData = await response.json();
+                setType("toast-error");
+                setMessage(errorData.message || "Failed to delete test code.");
+                showToast();
+            }
+        } catch (error) {
+            setType("toast-error");
+            setMessage(error.message || "Error deleting test code.");
+            showToast();
+            console.error("Error deleting test code:", error);
         }
     };
 
@@ -728,6 +758,15 @@ const QuestionDetails = () => {
                             <span>Code {currentCodePage + 1} of {totalCodePages}</span>
                             <button onClick={nextCodePage} disabled={totalCodePages <= 1}>
                                 Next Code
+                            </button>
+                        </div>
+
+                        <div className="delete-code-container">
+                            <button
+                                className="delete-code-btn"
+                                onClick={() => handleDeleteCode(currentCode)}
+                            >
+                                Delete Code
                             </button>
                         </div>
                     </div>

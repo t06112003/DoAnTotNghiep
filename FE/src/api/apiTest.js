@@ -78,6 +78,23 @@ export const deleteTest = async (username, testId) => {
     }
 };
 
+export const deleteTestCode = async (username, testId, code) => {
+    try {
+        const response = await fetch(`${API_URL}${API_ROUTES.DELETE_TEST_CODE}`, {
+            method: "DELETE",
+            headers: HEADER(),
+            body: JSON.stringify({
+                username: username,
+                testId: testId,
+                code: code,
+            }),
+        });
+        return response;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export const randomTest = async (username, testId, testKey) => {
     try {
         const response = await fetch(`${API_URL}${API_ROUTES.RANDOM_TEST}?Username=${username}&TestId=${testId}&TestKey=${testKey}`, {

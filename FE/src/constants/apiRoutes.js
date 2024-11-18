@@ -16,6 +16,7 @@ const API_ROUTES = {
     CREATE_TEST: '/Test/CreateTest',
     EDIT_TEST: '/Test/EditTest',
     DELETE_TEST: '/Test/DeleteTest',
+    DELETE_TEST_CODE :'/Test/DeleteTestCode',
     RANDOM_TEST: '/Test/RandomTest',
     TEST_REMAINING_TIME :'/Test/TestRemainingTime',
     MARK_VIEW: '/Test/MarkViewbyTest',
