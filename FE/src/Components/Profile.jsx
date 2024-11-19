@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from 'react';
 import { AppData } from '../Root';
-import { changeEmail, changePassword, getEmail, getName, importUsers, isAdmin } from '../api/apiUser';
+import { changeEmail, changePassword, getEmail, getName, importUsers, isAdmin, markViewUser } from '../api/apiUser';
 import { sendOTP } from '../api/apiOTP';
 import { getServiceStatus } from '../api/apiService';
 import { exportTest } from '../api/apiTest';
@@ -18,6 +18,10 @@ const Profile = () => {
     const [testId, setTestId] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [testName, setTestName] = useState("");
+    const [marks, setMarks] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [marksPerPage] = useState(10);
 
     const [changeEmailObject, setChangeEmailObject] = useState({
         otpCode: '',
@@ -38,6 +42,25 @@ const Profile = () => {
         emailReminderServiceLastRun: null,
     });
 
+    const paginatedMarks = marks.slice(
+        (currentPage - 1) * marksPerPage,
+        currentPage * marksPerPage
+    );
+
+    const totalPages = Math.ceil(marks.length / marksPerPage);
+
+    const nextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const prevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
     const fetchServiceStatus = async () => {
         try {
             const data = await getServiceStatus();
@@ -47,14 +70,35 @@ const Profile = () => {
         }
     };
 
+    const fetchUserMarks = async (filter = testName) => {
+        try {
+            const response = await markViewUser(userData.username, filter);
+            if (response.ok) {
+                const data = await response.json();
+                setMarks(data);
+                setCurrentPage(1); // Reset to the first page whenever new data is fetched
+            } else {
+                const errorData = await response.json();
+                setType("toast-error");
+                setMessage(errorData.message || "Failed to fetch marks.");
+                showToast();
+            }
+        } catch (error) {
+            setType("toast-error");
+            setMessage(error.message || "Error fetching marks.");
+            showToast();
+        }
+    };
+
+    const fetchData = async () => {
+        const fetchedName = await getName(userData.username);
+        const fetchedEmail = await getEmail(userData.username);
+        setName(fetchedName);
+        setEmail(fetchedEmail);
+        setChangeEmailObject((prev) => ({ ...prev, currentEmail: fetchedEmail }));
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            const fetchedName = await getName(userData.username);
-            const fetchedEmail = await getEmail(userData.username);
-            setName(fetchedName);
-            setEmail(fetchedEmail);
-            setChangeEmailObject((prev) => ({ ...prev, currentEmail: fetchedEmail }));
-        };
         fetchData();
     }, [userData.username]);
 
@@ -221,6 +265,7 @@ const Profile = () => {
 
     useEffect(() => {
         fetchServiceStatus();
+        fetchUserMarks();
     }, []);
 
     return (
@@ -368,6 +413,64 @@ const Profile = () => {
                         />
                         <button type="submit">Export Results</button>
                     </form>
+                </div>
+            )}
+
+            {!isAdminUser && (
+                <div className="user-mark">
+                    <h2>Your Profile</h2>
+                    <div className="marks-section">
+                        <h3>Test Marks</h3>
+                        <div className="filter-section">
+                            <input
+                                type="text"
+                                placeholder="Enter test name (optional)"
+                                value={testName}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    setTestName(value);
+                                    if (value === "") {
+                                        fetchUserMarks("");
+                                    }
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        fetchUserMarks(testName);
+                                    }
+                                }}
+                                className="test-name-input"
+                            />
+                        </div>
+                        {marks.length > 0 ? (
+                            <>
+                                <ul className="marks-list">
+                                    {paginatedMarks.map((mark, index) => (
+                                        <li key={index} className="mark-item">
+                                            <span className="test-name"><strong>Test Name:</strong> {mark.testName}</span>
+                                            <br />
+                                            <span className="test-mark"><strong>Mark:</strong> {mark.mark}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                {Math.ceil(marks.length / marksPerPage) > 1 && (
+
+                                <div className="pagination-controls">
+                                    <button onClick={prevPage} disabled={currentPage === 1}>
+                                        Previous
+                                    </button>
+                                    <span>
+                                        Page {currentPage} of {totalPages}
+                                    </span>
+                                    <button onClick={nextPage} disabled={currentPage === totalPages}>
+                                        Next
+                                    </button>
+                                </div>
+                                )}
+                            </>
+                        ) : (
+                            <p>No marks found.</p>
+                        )}
+                    </div>
                 </div>
             )}
         </div>
