@@ -7,10 +7,10 @@ const FinishedPage = () => {
     const [totalMarks, setTotalMarks] = useState(null);
 
     useEffect(() => {
-        if (!location.state || !location.state.totalMarks) {
-            navigate('/user');
+        if (location.state && typeof location.state.totalMarks === "number") {
+            setTotalMarks(location.state.totalMarks); // Gán điểm hợp lệ
         } else {
-            setTotalMarks(location.state.totalMarks);
+            navigate('/user'); // Điều hướng nếu không có `totalMarks`
         }
     }, [location.state, navigate]);
 

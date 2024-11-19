@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getAllQuestion, createQuestion, editQuestion, deleteQuestion, assignRandomQuestions, getQuestionAssigned, importQuestionsWord } from '../api/apiQuestion';
 import { editAnswer } from '../api/apiAnswer';
 import { deleteTestCode } from '../api/apiTest';
+import { isAdmin } from '../api/apiUser';
 import { AppData } from '../Root';
 import '../styles/QuestionDetails.css';
 import { checkSession } from "../utils/checkSession";
@@ -440,7 +441,7 @@ const QuestionDetails = () => {
 
     useEffect(() => {
         checkAdminStatus();
-    }, [userData.username]);
+    }, []);
 
     return (
         <div className="container">

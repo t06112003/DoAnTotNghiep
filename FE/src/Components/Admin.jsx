@@ -173,7 +173,7 @@ const Admin = () => {
 
     useEffect(() => {
         checkAdminStatus();
-    }, [userData.username]);
+    }, []);
 
     return (
         <div className="admin-cms-container">
