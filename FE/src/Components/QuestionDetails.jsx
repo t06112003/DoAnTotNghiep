@@ -399,7 +399,7 @@ const QuestionDetails = () => {
                 setType("toast-success");
                 setMessage("Test code deleted successfully!");
                 showToast();
-    
+
                 // Update the UI after deletion
                 if (totalCodePages > 1) {
                     nextCodePage(); // Navigate to the next code page if available
@@ -421,11 +421,26 @@ const QuestionDetails = () => {
         }
     };
 
-    useEffect(() => {
+    const checkAdminStatus = async () => {
         if (!checkSession()) {
             navigate("/");
+            return;
         }
-    }, []);
+
+        try {
+            const adminStatus = await isAdmin(userData.username);
+            if (adminStatus.status != 200) {
+                navigate("/user");
+            }
+        } catch (error) {
+            console.error("Error checking admin status:", error);
+            navigate("/user");
+        }
+    };
+
+    useEffect(() => {
+        checkAdminStatus();
+    }, [userData.username]);
 
     return (
         <div className="container">

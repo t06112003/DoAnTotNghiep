@@ -1,5 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import { createTest, getAllTest, editTest, deleteTest } from "../api/apiTest";
+import { isAdmin } from "../api/apiUser";
 import { useNavigate } from "react-router-dom";
 import { checkSession } from "../utils/checkSession";
 import { AppData } from "../Root";
@@ -153,11 +154,26 @@ const Admin = () => {
         }
     };
 
-    useEffect(() => {
+    const checkAdminStatus = async () => {
         if (!checkSession()) {
             navigate("/");
+            return;
         }
-    }, []);
+
+        try {
+            const adminStatus = await isAdmin(userData.username);
+            if (adminStatus.status != 200) {
+                navigate("/user");
+            }
+        } catch (error) {
+            console.error("Error checking admin status:", error);
+            navigate("/user");
+        }
+    };
+
+    useEffect(() => {
+        checkAdminStatus();
+    }, [userData.username]);
 
     return (
         <div className="admin-cms-container">

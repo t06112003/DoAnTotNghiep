@@ -117,7 +117,6 @@ const Profile = () => {
         checkAdminStatus();
     }, [userData.username]);
 
-
     const handleChangeEmail = async () => {
         try {
             const response = await changeEmail(
@@ -274,7 +273,7 @@ const Profile = () => {
                 <span role="img" aria-label="profile icon">📋</span> Your <span className="highlight">Profile</span>
             </h2>
             <div className="profile-details">
-                <p><strong>User name:</strong> {userData.username}</p>
+                <p><strong>Username:</strong> {userData.username}</p>
                 <p><strong>Name:</strong> {name}</p>
                 <p><strong>Email:</strong> {email}</p>
             </div>
@@ -317,7 +316,6 @@ const Profile = () => {
                     </div>
                 </div>
             )}
-
 
             {isChangingPassword && (
                 <div className="modal-overlay">
@@ -454,17 +452,17 @@ const Profile = () => {
                                 </ul>
                                 {Math.ceil(marks.length / marksPerPage) > 1 && (
 
-                                <div className="pagination-controls">
-                                    <button onClick={prevPage} disabled={currentPage === 1}>
-                                        Previous
-                                    </button>
-                                    <span>
-                                        Page {currentPage} of {totalPages}
-                                    </span>
-                                    <button onClick={nextPage} disabled={currentPage === totalPages}>
-                                        Next
-                                    </button>
-                                </div>
+                                    <div className="pagination-controls">
+                                        <button onClick={prevPage} disabled={currentPage === 1}>
+                                            Previous
+                                        </button>
+                                        <span>
+                                            Page {currentPage} of {totalPages}
+                                        </span>
+                                        <button onClick={nextPage} disabled={currentPage === totalPages}>
+                                            Next
+                                        </button>
+                                    </div>
                                 )}
                             </>
                         ) : (
