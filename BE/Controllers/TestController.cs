@@ -168,13 +168,13 @@ namespace BE.Controllers
             if (test == null) return NotFound(new { message = "Test not found!" });
             else
             {
-                _context.Test.Remove(test);
                 _context.Question.RemoveRange(question);
                 _context.Answer.RemoveRange(answer);
                 _context.EmailLog.RemoveRange(emailLogs);
                 _context.UserTestCodeAssignment.RemoveRange(userTestCode);
                 _context.UserMark.RemoveRange(userMark);
                 _context.TestQuestionAssignment.RemoveRange(testQuestionAssignments);
+                _context.Test.Remove(test);
                 await _context.SaveChangesAsync();
             }
             return Ok(new { message = "Delete Test Successfully!" });

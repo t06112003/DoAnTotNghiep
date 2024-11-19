@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../../styles/Timer.css'
 
-const Timer = React.memo(({ initialTime }) => {
+const Timer = React.memo(({ initialTime, onTimeUp }) => {
     const [remainingTime, setRemainingTime] = useState(initialTime);
 
     useEffect(() => {
@@ -13,7 +13,12 @@ const Timer = React.memo(({ initialTime }) => {
 
             setRemainingTime(newRemainingTime > 0 ? newRemainingTime : 0);
 
-            if (newRemainingTime <= 0) clearInterval(timerInterval);
+            if (newRemainingTime <= 0) {
+                clearInterval(timerInterval);
+                if (onTimeUp) {
+                    onTimeUp();
+                }
+            }
         }, 1000);
 
         return () => clearInterval(timerInterval);

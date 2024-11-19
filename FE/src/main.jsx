@@ -8,6 +8,8 @@ import QuestionDetails from './Components/QuestionDetails';
 import User from './Components/User';
 import Profile from './Components/Profile';
 import TestPage from './Components/TestPage';
+import TimeOutPage from './Components/TimeOutPage';
+import FinishedPage from './Components/FinishedPage';
 
 import "../src/styles/index.css";
 
@@ -41,6 +43,12 @@ const router = createBrowserRouter(
       <Route
         path='/user/test/:testId'
         element={<TestPage />} />
+      <Route
+        path="/timeout"
+        element={<TimeOutPage />} />
+      <Route
+        path="/finished"
+        element={<FinishedPage />} />
     </Route>
   )
 );

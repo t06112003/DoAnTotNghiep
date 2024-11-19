@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getQuestionAssign } from '../api/apiQuestion';
 import { getTestDetail, testRemainingTime } from '../api/apiTest'
 import { AppData } from "../Root";
@@ -8,12 +8,13 @@ import Timer from './Shared/Timer';
 import '../styles/TestPage.css';
 
 const TestPage = () => {
+    const navigate = useNavigate();
     const { testId } = useParams();
     const { userData, showToast, setType, setMessage } = useContext(AppData);
     const [questions, setQuestions] = useState([]);
     const [isLoading, setIsLoading] = useState();
     const [testName, setTestName] = useState('');
-    const [remainTime, setRemainTime] = useState(0);
+    const [remainTime, setRemainTime] = useState(null);
     const [answeredQuestions, setAnsweredQuestions] = useState({});
     const questionRefs = useRef([]);
 
@@ -46,6 +47,7 @@ const TestPage = () => {
             setMessage(response.message || "Answers submitted successfully!");
             setType("toast-success");
             showToast();
+            navigate('/finished', { state: { totalMarks: response.totalMarks } });
         } catch (error) {
             setMessage(error.message || "Failed to submit answers.");
             setType("toast-error");
@@ -109,10 +111,14 @@ const TestPage = () => {
     }, [questions.length, testId, userData.username]);
 
     useEffect(() => {
+        if (remainTime === 0) {
+            navigate('/timeout');
+        }
+    }, [remainTime]);
+
+    useEffect(() => {
         fetchTestDetails();
         fetchTestRemainingTime();
-
-        // Retrieve answers for the current user and test
         const storageKey = `test-${testId}-${userData.username}-answers`;
         const savedAnswers = sessionStorage.getItem(storageKey);
         if (savedAnswers) {
@@ -181,7 +187,7 @@ const TestPage = () => {
                         </button>
                     ))}
                 </div>
-                <Timer initialTime={remainTime} />
+                <Timer initialTime={remainTime} onTimeUp={handleSubmit} />
                 <button onClick={handleSubmit} className="submit-button">
                     Submit Answers
                 </button>

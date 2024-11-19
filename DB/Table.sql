@@ -1,5 +1,6 @@
 CREATE DATABASE DoAn;
 --Drop database DoAn;
+--Use BTL
 USE DoAn;
 
 CREATE TABLE "User" (
