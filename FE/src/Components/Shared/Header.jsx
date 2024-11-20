@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/react.svg";
 import { logOut } from "../../api/apiUser";
@@ -9,6 +9,7 @@ import "../../styles/Header.css";
 
 const Header = () => {
   const navigate = useNavigate();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const { userData, setUserData, showToast, setType, setMessage } = useContext(AppData);
 
@@ -16,8 +17,9 @@ const Header = () => {
     logOut(() => setUserData({}));
     navigate('/login');
     setType('toast-success');
-    setMessage('Log out successfully!')
+    setMessage('Log out successfully!');
     showToast();
+    setIsDropdownOpen(false);
   };
 
   const navigateHome = () => {
@@ -26,25 +28,36 @@ const Header = () => {
 
   return (
     <div className="header">
-        <div className="header-left" onClick={navigateHome}>
-          <img src={logo} alt="University Logo" className="logo" />
-          <span className="university-name">GGGGGGGGGG</span>
-        </div>
+      <div className="header-left" onClick={navigateHome}>
+        <img src={logo} alt="University Logo" className="logo" />
+        <span className="university-name">GGGGGGGGGG</span>
+      </div>
 
-        <div className="header-right">
-          <div className="profile-dropdown">
-            <img
-              src={logo}
-              alt="User Profile"
-              className="profile-pic"
-            />
-            <span className="user-name">{userData.name}</span>
+      <div className="header-right">
+        <div
+          className="profile-dropdown"
+          onMouseEnter={() => setIsDropdownOpen(true)}
+          onMouseLeave={() => setIsDropdownOpen(false)}
+        >
+          <img
+            src={logo}
+            alt="User Profile"
+            className="profile-pic"
+          />
+          <span className="user-name">{userData.name}</span>
+          {isDropdownOpen && (
             <div className="dropdown-content">
-              <Link to="/profile">Thông tin cá nhân</Link>
+              <Link
+                to="/profile"
+                onClick={() => setIsDropdownOpen(false)}
+              >
+                Thông tin cá nhân
+              </Link>
               <button onClick={handleLogout}>Đăng xuất</button>
             </div>
-          </div>
+          )}
         </div>
+      </div>
     </div>
   );
 };
