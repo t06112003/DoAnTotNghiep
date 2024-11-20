@@ -4,6 +4,7 @@ import { isAdmin } from "../api/apiUser";
 import { useNavigate } from "react-router-dom";
 import { checkSession } from "../utils/checkSession";
 import { AppData } from "../Root";
+import ConfirmModal from './Shared/ConfirmModal';
 
 import "../styles/Admin.css";
 
@@ -20,6 +21,8 @@ const Admin = () => {
     });
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+    const [selectedTestId, setSelectedTestId] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [selectedTest, setSelectedTest] = useState(null);
@@ -131,6 +134,18 @@ const Admin = () => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleDeleteConfirmation = (testId) => {
+        setSelectedTestId(testId);
+        setIsConfirmModalOpen(true);
+    };
+
+    const confirmDelete = () => {
+        if (selectedTestId) {
+            handleDeleteTest(selectedTestId);
+        }
+        setIsConfirmModalOpen(false);
     };
 
     const handleDeleteTest = async (testId) => {
@@ -269,7 +284,7 @@ const Admin = () => {
                                 }}></button>
                                 <button className="delete-btn" onClick={(e) => {
                                     e.stopPropagation();
-                                    handleDeleteTest(test.testId);
+                                    handleDeleteConfirmation(test.testId);
                                 }}></button>
                             </div>
                         </li>
@@ -354,6 +369,13 @@ const Admin = () => {
                     </div>
                 </div>
             )}
+            <ConfirmModal
+                isOpen={isConfirmModalOpen}
+                title="Delete Test"
+                content="Are you sure you want to delete this test? This action cannot be undone."
+                setIsOpen={setIsConfirmModalOpen}
+                onOK={confirmDelete}
+            />
         </div>
     );
 };

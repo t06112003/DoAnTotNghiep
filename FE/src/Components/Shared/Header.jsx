@@ -20,9 +20,13 @@ const Header = () => {
     showToast();
   };
 
+  const navigateHome = () => {
+    navigate('/user');
+  };
+
   return (
     <div className="header">
-        <div className="header-left">
+        <div className="header-left" onClick={navigateHome}>
           <img src={logo} alt="University Logo" className="logo" />
           <span className="university-name">GGGGGGGGGG</span>
         </div>
