@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Mail;
-using BE.Controllers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BE.Controllers

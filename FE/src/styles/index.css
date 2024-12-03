@@ -20,3 +20,67 @@ body {
     gap: 40px;
     position: relative;
 }
+
+.gap-32 {
+    gap: 32px !important;
+}
+
+.icon-20 {
+    width: 20px;
+    height: 20px;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.icon-32 {
+    width: 32px;
+    height: 32px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    border-radius: 4px;
+}
+
+.facebook {
+    background-image: url("../assets/facebook.svg");
+}
+
+.youtube {
+    background-image: url("./../assets/youtube.svg");
+}
+
+.github {
+    background-image: url("./../assets/github.svg");
+}
+
+.discord {
+    background-image: url("./../assets/discord.svg");
+}
+
+.react {
+    background-image: url("./../assets/React-icon.svg.png");
+}
+
+.dotnet {
+    background-image: url("./../assets/Microsoft_.NET_logo.svg.png");
+}
+
+.sqlServer {
+    background-image: url("./../assets/microsoft-sql-server-logo-vector.svg");
+}
+
+.html {
+    background-image: url("./../assets/HTML5_logo_and_wordmark.svg.png");
+}
+
+.css {
+    background-image: url("./../assets/CSS3_logo_and_wordmark.svg.png");
+}
+
+.js {
+    background-image: url("./../assets/JavaScript-logo.png");
+}
+
+.csharp {
+    background-image: url("./../assets/Logo_C_sharp.svg.png");
+}

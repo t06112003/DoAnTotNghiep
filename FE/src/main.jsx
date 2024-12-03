@@ -14,45 +14,45 @@ import FinishedPage from './Components/FinishedPage';
 import "../src/styles/index.css";
 
 const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route
-      path='/'
-      element={<Root />}
-    >
-      <Route
-        index
-        element={<Navigate to="/login" replace />}
-      />
-      <Route
-        path='/login'
-        element={<Login />}
-      />
-      <Route
-        path='/admin'
-        element={<Admin />}
-      />
-      <Route
-        path="admin/test/:testId"
-        element={<QuestionDetails />} />
-      <Route
-        path="/user"
-        element={<User />} />
-      <Route
-        path="/profile"
-        element={<Profile />} />
-      <Route
-        path='/user/test/:testId'
-        element={<TestPage />} />
-      <Route
-        path="/timeout"
-        element={<TimeOutPage />} />
-      <Route
-        path="/finished"
-        element={<FinishedPage />} />
-    </Route>
-  )
+    createRoutesFromElements(
+        <Route
+            path='/'
+            element={<Root />}
+        >
+            <Route
+                index
+                element={<Navigate to="/login" replace />}
+            />
+            <Route
+                path='/login'
+                element={<Login />}
+            />
+            <Route
+                path='/admin'
+                element={<Admin />}
+            />
+            <Route
+                path="admin/test/:testId"
+                element={<QuestionDetails />} />
+            <Route
+                path="/user"
+                element={<User />} />
+            <Route
+                path="/profile"
+                element={<Profile />} />
+            <Route
+                path='/user/test/:testId'
+                element={<TestPage />} />
+            <Route
+                path="/timeout"
+                element={<TimeOutPage />} />
+            <Route
+                path="/finished"
+                element={<FinishedPage />} />
+        </Route>
+    )
 );
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <RouterProvider router={router} />
+    <RouterProvider router={router} />
 );
