@@ -41,8 +41,6 @@ namespace BE.Controllers
             if (input.Password != user.Password) return BadRequest(new { message = "Wrong password, please check again!" });
             else return Ok(new UserLoginOutputDto()
             {
-                Username = user.Username,
-                Name = user.Name,
                 Token = _tokenService.CreateToken(user),
             });
         }
@@ -176,15 +174,37 @@ namespace BE.Controllers
             var user = await _context.User.SingleOrDefaultAsync(x => x.Username == input.Username);
             if (user == null) return BadRequest(new { message = "User not found!" });
             if (user.Email != input.Email) return BadRequest(new { message = "Wrong Email!" });
-            else
+
+            var resetToken = Guid.NewGuid().ToString();
+            user.ResetToken = resetToken;
+            user.TokenExpiry = vietnamTime.AddMinutes(15);
+            await _context.SaveChangesAsync();
+
+            var resetLink = $"http://localhost:5173/reset-password/{resetToken}";
+            await _email.SendEmail(new EmailModel()
             {
-                return await _email.SendEmail(new EmailModel()
-                {
-                    To = user.Email,
-                    Subject = "Forgot your password!",
-                    Body = "<h2>Dear " + user.Name + ", please don't share your password for anyone!</h2><h3>Your password is:</h3>" + user.Password,
-                });
-            }
+                To = user.Email,
+                Subject = "Password Reset Request",
+                Body = $"<h2>Hi {user.Name},</h2><p>Click the link below to reset your password:</p>" +
+                       $"<a href='{resetLink}'>Reset Password</a><p>This link will expire in 15 minutes.</p>",
+            });
+
+            return Ok(new { message = "Password reset link has been sent to your email!" });
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<ActionResult> ResetPassword([FromQuery] string token, [FromBody] UserResetPasswordInputDto input)
+        {
+            var user = await _context.User.SingleOrDefaultAsync(x => x.ResetToken == token);
+            if (user == null || user.TokenExpiry < vietnamTime)
+                return BadRequest(new { message = "Invalid or expired token!" });
+
+            user.Password = input.Password;
+            user.ResetToken = null;
+            user.TokenExpiry = null;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Password has been reset successfully!" });
         }
 
         [HttpGet("CheckUserTestCode")]
@@ -195,7 +215,7 @@ namespace BE.Controllers
             var test = await _context.Test.SingleOrDefaultAsync(t => t.TestId == input.TestId);
             if (test == null) return BadRequest(new { message = "Test not found!" });
             var userTestCode = await _context.UserTestCodeAssignment
-                .SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);    
+                .SingleOrDefaultAsync(utc => utc.Username == input.Username && utc.TestId == input.TestId);
             if (userTestCode == null) return BadRequest();
             if (vietnamTime > userTestCode.AssignmentTime + test.TestTime) return NotFound(new { message = "Test is overdue!" });
             return Ok();

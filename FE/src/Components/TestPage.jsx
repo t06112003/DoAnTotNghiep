@@ -1,16 +1,18 @@
 import { useEffect, useState, useContext, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getQuestionAssign } from '../api/apiQuestion';
-import { getTestDetail, testRemainingTime } from '../api/apiTest'
+import { getTestDetail, testRemainingTime, checkUserMark } from '../api/apiTest'
 import { AppData } from "../Root";
 import { submitAnswer } from '../api/apiAnswer';
 import Timer from './Shared/Timer';
 import '../styles/TestPage.css';
+import { getUserFromToken } from "../utils/auth";
 
 const TestPage = () => {
+    const username11 = getUserFromToken();
     const navigate = useNavigate();
     const { testId } = useParams();
-    const { userData, showToast, setType, setMessage } = useContext(AppData);
+    const { showToast, setType, setMessage } = useContext(AppData);
     const [questions, setQuestions] = useState([]);
     const [isLoading, setIsLoading] = useState();
     const [testName, setTestName] = useState('');
@@ -28,13 +30,13 @@ const TestPage = () => {
             ...answeredQuestions,
             [questionId]: answerId,
         };
-        const storageKey = `test-${testId}-${userData.username}-answers`;
+        const storageKey = `test-${testId}-${username11}-answers`;
         sessionStorage.setItem(storageKey, JSON.stringify(updatedAnswers));
     };
 
     const handleSubmit = async () => {
         const inputData = {
-            username: userData.username,
+            username: username11,
             testId: testId,
             answers: Object.keys(answeredQuestions).map((questionId) => ({
                 questionId: Number(questionId),
@@ -63,7 +65,7 @@ const TestPage = () => {
 
     const fetchTestRemainingTime = async () => {
         try {
-            const response = await testRemainingTime(userData.username, testId);
+            const response = await testRemainingTime(username11, testId);
             const data = await response.json();
             if (response.ok) {
                 const [hours, minutes, seconds] = data.remainingTime.split(':').map(Number);
@@ -91,7 +93,7 @@ const TestPage = () => {
         if (questions.length === 0) {
             try {
                 setIsLoading(true);
-                const response = await getQuestionAssign(userData.username, testId);
+                const response = await getQuestionAssign(username11, testId);
                 if (response.ok) {
                     const data = await response.json();
                     setQuestions(data);
@@ -106,9 +108,22 @@ const TestPage = () => {
         }
     };
 
+    const fetchUserMarks = async () => {
+        try {
+            const response = await checkUserMark(username11, testId);
+            if (response.ok) {
+                navigate('/timeout');
+            }
+        }
+        catch(error) {
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
         fetchQuestions();
-    }, [questions.length, testId, userData.username]);
+        fetchUserMarks();
+    }, [questions.length, testId, username11]);
 
     useEffect(() => {
         if (remainTime === 0) {
@@ -119,12 +134,12 @@ const TestPage = () => {
     useEffect(() => {
         fetchTestDetails();
         fetchTestRemainingTime();
-        const storageKey = `test-${testId}-${userData.username}-answers`;
+        const storageKey = `test-${testId}-${username11}-answers`;
         const savedAnswers = sessionStorage.getItem(storageKey);
         if (savedAnswers) {
             setAnsweredQuestions(JSON.parse(savedAnswers));
         }
-    }, [testId, userData.username]);
+    }, [testId, username11]);
 
     if (isLoading) {
         return <p>Loading...</p>;

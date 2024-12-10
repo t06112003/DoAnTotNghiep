@@ -1,17 +1,26 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/logoDuRiuImg2.png";
-import { logOut } from "../../api/apiUser";
+import { logOut, getName } from "../../api/apiUser";
 
 import { AppData } from "../../Root";
+
+import { getUserFromToken } from "../../utils/auth";
 
 import "../../styles/Header.css";
 
 const Header = () => {
+    const username11 = getUserFromToken();
     const navigate = useNavigate();
+    const [name, setName] = useState("");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    const { userData, setUserData, showToast, setType, setMessage } = useContext(AppData);
+    const { setUserData, showToast, setType, setMessage } = useContext(AppData);
+
+    const fetchData = async () => {
+        const fetchedName = await getName(username11);
+        setName(fetchedName)
+    }
 
     const handleLogout = () => {
         logOut(() => setUserData({}));
@@ -26,6 +35,10 @@ const Header = () => {
         navigate('/user');
     };
 
+    useEffect(() => {
+        fetchData();
+    }, [username11]);
+
     return (
         <div className="header">
             <div className="header-left" onClick={navigateHome}>
@@ -39,7 +52,7 @@ const Header = () => {
                     onMouseEnter={() => setIsDropdownOpen(true)}
                     onMouseLeave={() => setIsDropdownOpen(false)}
                 >
-                    <span className="user-name">Welcome, {userData.name}</span>
+                    <span className="user-name">Welcome, {name}</span>
                     {isDropdownOpen && (
                         <div className="dropdown-content">
                             <Link

@@ -12,6 +12,7 @@ import TimeOutPage from './Components/TimeOutPage';
 import FinishedPage from './Components/FinishedPage';
 
 import "../src/styles/index.css";
+import ResetPassword from './Components/ResetPassword';
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -49,6 +50,9 @@ const router = createBrowserRouter(
             <Route
                 path="/finished"
                 element={<FinishedPage />} />
+            <Route
+                path="/reset-password/:token"
+                element={<ResetPassword />} />
         </Route>
     )
 );

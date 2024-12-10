@@ -7,10 +7,12 @@ import { exportTest } from '../api/apiTest';
 import '../styles/Profile.css';
 import { useNavigate } from 'react-router-dom';
 import { checkSession } from "../utils/checkSession";
+import { getUserFromToken } from "../utils/auth";
 
 const Profile = () => {
+    const username11 = getUserFromToken();
     const navigate = useNavigate();
-    const { userData, showToast, setType, setMessage } = useContext(AppData);
+    const { showToast, setType, setMessage } = useContext(AppData);
     const [isChangingEmail, setIsChangingEmail] = useState(false);
     const [isChangingPassword, setIsChangingPassword] = useState(false);
     const [isAdminUser, setIsAdminUser] = useState(false);
@@ -72,11 +74,11 @@ const Profile = () => {
 
     const fetchUserMarks = async (filter = testName) => {
         try {
-            const response = await markViewUser(userData.username, filter);
+            const response = await markViewUser(username11, filter);
             if (response.ok) {
                 const data = await response.json();
                 setMarks(data);
-                setCurrentPage(1); // Reset to the first page whenever new data is fetched
+                setCurrentPage(1);
             } else {
                 const errorData = await response.json();
                 setType("toast-error");
@@ -91,8 +93,8 @@ const Profile = () => {
     };
 
     const fetchData = async () => {
-        const fetchedName = await getName(userData.username);
-        const fetchedEmail = await getEmail(userData.username);
+        const fetchedName = await getName(username11);
+        const fetchedEmail = await getEmail(username11);
         setName(fetchedName);
         setEmail(fetchedEmail);
         setChangeEmailObject((prev) => ({ ...prev, currentEmail: fetchedEmail }));
@@ -100,10 +102,10 @@ const Profile = () => {
 
     useEffect(() => {
         fetchData();
-    }, [userData.username]);
+    }, [username11]);
 
     const checkAdminStatus = async () => {
-        const adminStatus = await isAdmin(userData.username);
+        const adminStatus = await isAdmin(username11);
         if (checkSession()) {
             if (adminStatus.status === 200) {
                 setIsAdminUser(true);
@@ -115,12 +117,12 @@ const Profile = () => {
 
     useEffect(() => {
         checkAdminStatus();
-    }, [userData.username]);
+    }, [username11]);
 
     const handleChangeEmail = async () => {
         try {
             const response = await changeEmail(
-                userData.username,
+                username11,
                 changeEmailObject.otpCode,
                 changeEmailObject.currentEmail,
                 changeEmailObject.newEmail
@@ -153,7 +155,7 @@ const Profile = () => {
 
         try {
             const response = await changePassword(
-                userData.username,
+                username11,
                 changePasswordObject.otpCode,
                 changePasswordObject.currentPassword,
                 changePasswordObject.newPassword,
@@ -177,7 +179,7 @@ const Profile = () => {
     };
 
     const handleSendOTP = async () => {
-        const response = await sendOTP(userData.username, email);
+        const response = await sendOTP(username11, email);
         if (response && response.ok) {
             setType('toast-success');
             setMessage('OTP sent successfully!');
@@ -195,7 +197,7 @@ const Profile = () => {
     const handleFileUpload = async () => {
         if (file) {
             try {
-                const response = await importUsers(file, userData.username);
+                const response = await importUsers(file, username11);
                 const data = await response.json();
                 if (response.ok) {
                     setType('toast-success');
@@ -217,7 +219,7 @@ const Profile = () => {
     const handleExport = async (e) => {
         e.preventDefault();
         try {
-            const response = await exportTest(userData.username, testId);
+            const response = await exportTest(username11, testId);
 
             if (response.ok) {
                 const blob = await response.blob();
@@ -273,7 +275,7 @@ const Profile = () => {
                 <span role="img" aria-label="profile icon">📋</span> Your <span className="highlight">Profile</span>
             </h2>
             <div className="profile-details">
-                <p><strong>Username:</strong> {userData.username}</p>
+                <p><strong>Username:</strong> {username11}</p>
                 <p><strong>Name:</strong> {name}</p>
                 <p><strong>Email:</strong> {email}</p>
             </div>

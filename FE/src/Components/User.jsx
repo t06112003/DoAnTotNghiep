@@ -1,14 +1,16 @@
 import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { checkTestCode } from '../api/apiUser';
-import { getAllTestUser, randomTest } from '../api/apiTest';
+import { getAllTestUser, randomTest, checkUserMark } from '../api/apiTest';
 import '../styles/User.css';
 import { checkSession } from "../utils/checkSession";
+import { getUserFromToken } from "../utils/auth";
 import { AppData } from "../Root";
 
 const User = () => {
+    const username11 = getUserFromToken();
     const navigate = useNavigate();
-    const { userData, showToast, setType, setMessage } = useContext(AppData);
+    const { showToast, setType, setMessage } = useContext(AppData);
     const [tests, setTests] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTest, setSelectedTest] = useState(null);
@@ -37,7 +39,7 @@ const User = () => {
 
     const openTestKeyModal = async (test) => {
         try {
-            const response = await checkTestCode(userData.username, test.testId);
+            const response = await checkTestCode(username11, test.testId);
             if (response.status == 200) {
                 navigate(`test/${test.testId}`);
             } else if (response.status == 404) {
@@ -58,7 +60,7 @@ const User = () => {
 
     const handleTestKeySubmit = async () => {
         try {
-            const response = await randomTest(userData.username, selectedTest.testId, testKey);
+            const response = await randomTest(username11, selectedTest.testId, testKey);
             const data = await response.json();
 
             if (response.ok) {

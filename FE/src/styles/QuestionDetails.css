@@ -6,6 +6,8 @@
     border-radius: 8px;
     background-color: #f9f9f9;
     position: relative;
+    margin-top: 24px;
+    margin-bottom: 40px;
 }
 
 .question-item {
@@ -353,4 +355,13 @@
 
 .delete-code-btn:hover {
     background-color: #c82333;
+}
+
+.show-assign {
+    margin-top: 15px;
+    border-radius: 20px;
+}
+
+.show-assign:hover {
+    background-color: #3e8e41;
 }

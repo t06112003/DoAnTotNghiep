@@ -9,6 +9,8 @@ CREATE TABLE "User" (
     Password varchar(16) NOT NULL CHECK (LEN(Password) >= 8),
     Email varchar(50) NOT NULL UNIQUE,
     Name nvarchar(100) NOT NULL,
+    ResetToken nvarchar(500),
+    TokenExpiry datetime2,
     IsAdmin bit NOT NULL,
 );
 
@@ -67,6 +69,7 @@ CREATE TABLE UserMark (
     UserId bigint NOT NULL FOREIGN KEY REFERENCES "User"(UserId),
     TestId bigint NOT NULL FOREIGN KEY REFERENCES Test(TestId),
     Mark float NOT NULL,
+    CONSTRAINT UniqueConstraint UNIQUE (UserId, TestId)
 );
 
 CREATE TABLE UserTestCodeAssignment (

@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace BE.Model.Dto
 {
-    public class UserLoginOutputDto
+    public class ResetPasswordInputDto
     {
         public string Token { get; set; }
+        public string NewPassword { get; set; }
     }
 }

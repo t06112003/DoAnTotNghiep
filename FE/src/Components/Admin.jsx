@@ -2,6 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import { createTest, getAllTest, editTest, deleteTest } from "../api/apiTest";
 import { isAdmin } from "../api/apiUser";
 import { useNavigate } from "react-router-dom";
+import { getUserFromToken } from "../utils/auth";
 import { checkSession } from "../utils/checkSession";
 import { AppData } from "../Root";
 import ConfirmModal from './Shared/ConfirmModal';
@@ -9,8 +10,9 @@ import ConfirmModal from './Shared/ConfirmModal';
 import "../styles/Admin.css";
 
 const Admin = () => {
+    const username11 = getUserFromToken();
     const navigate = useNavigate();
-    const { userData, showToast, setType, setMessage } = useContext(AppData);
+    const { showToast, setType, setMessage } = useContext(AppData);
 
     const [createFormData, setCreateFormData] = useState({
         testName: "",
@@ -73,7 +75,7 @@ const Admin = () => {
         setIsLoading(true);
         try {
             const response = await createTest(
-                userData.username,
+                username11,
                 createFormData.testName,
                 createFormData.testKey,
                 createFormData.beginDate,
@@ -85,7 +87,7 @@ const Admin = () => {
                 setType("toast-success");
                 setMessage(data.message);
                 showToast();
-                setTestList([...testList, createFormData]);
+                fetchTests();
                 setCreateFormData("");
                 setIsModalOpen(false);
             } else {
@@ -106,7 +108,7 @@ const Admin = () => {
         try {
             if (selectedTest) {
                 const response = await editTest(
-                    userData.username,
+                    username11,
                     selectedTest.testId,
                     selectedTest.testName,
                     selectedTest.testKey,
@@ -150,7 +152,7 @@ const Admin = () => {
 
     const handleDeleteTest = async (testId) => {
         try {
-            const response = await deleteTest(userData.username, testId);
+            const response = await deleteTest(username11, testId);
             const data = await response.json();
             if (response.ok) {
                 setType("toast-success");
@@ -176,7 +178,7 @@ const Admin = () => {
         }
 
         try {
-            const adminStatus = await isAdmin(userData.username);
+            const adminStatus = await isAdmin(username11);
             if (adminStatus.status != 200) {
                 navigate("/user");
             }
@@ -272,8 +274,8 @@ const Admin = () => {
                 </div>
 
                 <ul>
-                    {currentTests.map((test) => (
-                        <li key={test.testId} className="test-item" onClick={() => { navigate(`test/${test.testId}`) }}>
+                    {currentTests.map((test, index) => (
+                        <li key={`${test.testId}-${index}`} className="test-item" onClick={() => { navigate(`test/${test.testId}`) }}>
                             <span className="test-name">{test.testName}</span>
                             <span className="test-date">{new Date(test.beginDate).toISOString().split('T')[0]}</span>
                             <div className="action-buttons">

@@ -140,6 +140,14 @@ export const markViewTest = async (
     }
 };
 
+export const checkUserMark = async (username, testId) => {
+    const response = await fetch(`${API_URL}${API_ROUTES.CHECK_USER_MARK}?Username=${username}&TestId=${testId}`, {
+        method: "GET",
+        headers: HEADER(),
+    });
+    return response;
+};
+
 export const exportTest = async (username, testId) => {
     try {
         const response = await fetch(`${API_URL}${API_ROUTES.EXPORT_TEST}?Username=${username}&TestId=${testId}`, {

@@ -7,11 +7,13 @@ import { isAdmin } from '../api/apiUser';
 import { AppData } from '../Root';
 import '../styles/QuestionDetails.css';
 import { checkSession } from "../utils/checkSession";
+import { getUserFromToken } from "../utils/auth";
 
 const QuestionDetails = () => {
+    const username11 = getUserFromToken();
     const navigate = useNavigate();
     const { testId } = useParams();
-    const { userData, showToast, setType, setMessage } = useContext(AppData);
+    const { showToast, setType, setMessage } = useContext(AppData);
     const [questions, setQuestions] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -75,7 +77,7 @@ const QuestionDetails = () => {
             return;
         }
         try {
-            const response = await importQuestionsWord(selectedFile, testId, userData.username);
+            const response = await importQuestionsWord(selectedFile, testId, username11);
             const data = await response.json();
             if (response.ok) {
                 setType("toast-success");
@@ -107,7 +109,7 @@ const QuestionDetails = () => {
         e.preventDefault();
         try {
             const response = await assignRandomQuestions(
-                userData.username,
+                username11,
                 testId,
                 assignInput.easyQuestions,
                 assignInput.mediumQuestions,
@@ -248,7 +250,7 @@ const QuestionDetails = () => {
         e.preventDefault();
         try {
             const response = await createQuestion(
-                userData.username,
+                username11,
                 testId,
                 newQuestion.questionText,
                 newQuestion.questionDifficultyName,
@@ -304,7 +306,7 @@ const QuestionDetails = () => {
         e.preventDefault();
         try {
             const response = await editQuestion(
-                userData.username,
+                username11,
                 currentQuestionId,
                 newQuestion.questionText
             );
@@ -336,7 +338,7 @@ const QuestionDetails = () => {
 
     const handleDeleteQuestion = async (questionId) => {
         try {
-            const response = await deleteQuestion(userData.username, questionId);
+            const response = await deleteQuestion(username11, questionId);
             const data = await response.json();
             if (response.ok) {
                 setType("toast-success");
@@ -364,7 +366,7 @@ const QuestionDetails = () => {
         e.preventDefault();
         try {
             const response = await editAnswer(
-                userData.username,
+                username11,
                 selectedAnswer.answerId,
                 selectedAnswer.answerText,
                 selectedAnswer.isCorrect
@@ -395,7 +397,7 @@ const QuestionDetails = () => {
 
     const handleDeleteCode = async (code) => {
         try {
-            const response = await deleteTestCode(userData.username, testId, code);
+            const response = await deleteTestCode(username11, testId, code);
             if (response.ok) {
                 setType("toast-success");
                 setMessage("Test code deleted successfully!");
@@ -429,7 +431,7 @@ const QuestionDetails = () => {
         }
 
         try {
-            const adminStatus = await isAdmin(userData.username);
+            const adminStatus = await isAdmin(username11);
             if (adminStatus.status != 200) {
                 navigate("/user");
             }
@@ -460,10 +462,8 @@ const QuestionDetails = () => {
                     </button>
                     <div className="plus-icon"></div>
                 </div>
-
-                <button onClick={fetchAssignQuestions}>Show Assigned Questions</button>
-
             </div>
+            <button className="show-assign" onClick={fetchAssignQuestions}>Show Assigned Questions</button>
             <ul>
                 {currentQuestion.map((question) => (
                     <li key={question.questionId} className="question-item">

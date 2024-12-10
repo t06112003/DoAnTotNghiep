@@ -8,9 +8,9 @@ const FinishedPage = () => {
 
     useEffect(() => {
         if (location.state && typeof location.state.totalMarks === "number") {
-            setTotalMarks(location.state.totalMarks); // Gán điểm hợp lệ
+            setTotalMarks(location.state.totalMarks);
         } else {
-            navigate('/user'); // Điều hướng nếu không có `totalMarks`
+            navigate('/user');
         }
     }, [location.state, navigate]);
 

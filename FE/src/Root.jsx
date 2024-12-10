@@ -5,8 +5,6 @@ import { Outlet, ScrollRestoration, useLocation } from "react-router-dom";
 import Header from "./Components/Shared/Header";
 import ToastMessages from "./Components/Shared/ToastMessage";
 
-import { getName } from "./api/apiUser";
-
 export const AppData = createContext();
 
 const Root = () => {
@@ -29,32 +27,17 @@ const Root = () => {
     };
 
     useEffect(() => {
-        if (userData.username) {
-            getName(userData.username).then(name => {
-                setUserData(prev => ({
-                    ...prev,
-                    name: name
-                }))
-            })
-        }
-    }, [userData.username])
-
-    useEffect(() => {
-        const { username, name, token } = userData;
-        localStorage.setItem('userData', JSON.stringify({
-            username: username,
-            name: name,
-            token: token,
-        }))
-    }, [userData.name])
-
-    useEffect(() => {
         setCurrentRoute(location.pathname)
     }, [location.pathname])
 
+    const shouldShowHeader = !(
+        currentRoute === "/login" || 
+        currentRoute.startsWith("/reset-password")
+    );
+
     return (
         <AppData.Provider value={{ showToast, setType, setMessage, currentRoute, setCurrentRoute, userData, setUserData }}>
-            {!(currentRoute === '/login') && <Header />}
+            {shouldShowHeader && <Header />}
             <ToastMessages isDisplay={isShow} type={type} message={message} setIsDisplay={setIsShow} />
             <ScrollRestoration />
             <Outlet />

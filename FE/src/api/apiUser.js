@@ -111,6 +111,21 @@ export const forgetPassword = async (username, email) => {
     }
 };
 
+export const resetPassword = async (token, password) => {
+    try {
+        const response = await fetch(`${API_URL}${API_ROUTES.RESET_PASSWORD}?token=${token}`, {
+            method: "POST",
+            headers: HEADER(),
+            body: JSON.stringify({
+                password: password,
+            }),
+        });
+        return response;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export const logOut = async (cleanUpData) => {
     localStorage.setItem("userData", "{}");
     cleanUpData();

@@ -4,6 +4,7 @@ import { isAdmin } from "../api/apiUser";
 import { useNavigate } from "react-router-dom";
 
 import { checkSession } from "../utils/checkSession";
+import { getUserFromToken } from "../utils/auth";
 import { AppData } from "../Root";
 
 import "../styles/Login.css";
@@ -11,7 +12,7 @@ import "../styles/Login.css";
 const Login = () => {
     const navigate = useNavigate();
 
-    const { userData, showToast, setMessage, setType, setUserData } = useContext(AppData);
+    const { showToast, setMessage, setType, setUserData } = useContext(AppData);
 
     const [username, setUsername] = useState("");
     const [username1, setUsername1] = useState("");
@@ -32,7 +33,8 @@ const Login = () => {
                 if (response.status === 200) {
                     localStorage.setItem('userData', JSON.stringify(data));
                     setUserData(data);
-                    const adminStatus = await isAdmin(data.username);
+                    const username11 = getUserFromToken();
+                    const adminStatus = await isAdmin(username11);
                     setType('toast-success');
                     setMessage('Login successfully!')
                     showToast();
@@ -54,6 +56,8 @@ const Login = () => {
             setIsLoading(false);
         }
     };
+
+    const username11 = getUserFromToken();
 
     const handleForgotPassword = async (e) => {
         e.preventDefault();
@@ -84,7 +88,7 @@ const Login = () => {
 
     const checkSessionLogin = async () => {
         if (checkSession()) {
-            const adminStatus = await isAdmin(userData.username);
+            const adminStatus = await isAdmin(username11);
             if (adminStatus.status === 200) {
                 navigate("/admin");
             } else {
@@ -92,7 +96,7 @@ const Login = () => {
             }
         }
     }
-    
+
     useEffect(() => {
         checkSessionLogin();
     }, []);
