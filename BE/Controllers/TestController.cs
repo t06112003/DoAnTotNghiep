@@ -334,7 +334,14 @@ namespace BE.Controllers
             if (user == null) return BadRequest(new { message = "User not found!" });
             var test = await _context.Test.SingleOrDefaultAsync(t => t.TestId == input.TestId);
             if (test == null) return BadRequest(new { message = "Test not found!" });
-            return Ok(await _context.UserMark.AnyAsync(x => x.UserId == user.UserId && x.TestId == test.TestId));
+            if (await _context.UserMark.AnyAsync(x => x.UserId == user.UserId && x.TestId == test.TestId))
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         [Authorize]
